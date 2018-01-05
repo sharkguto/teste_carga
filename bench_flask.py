@@ -5,7 +5,7 @@ from flask import jsonify as r_json
 DB_CONFIG = {
     'host': '127.0.0.1',
     'user': 'gustavo',
-    'password': 'teste',
+    'password': 'test',
     'port': '5432',
     'database': 'test'
 }
@@ -13,16 +13,16 @@ DB_CONFIG = {
 connection_pool = pool.ThreadedConnectionPool(10, 25, **DB_CONFIG)
 conn = connection_pool.getconn()
 # use conn, then:
-#connection_pool.putconn(conn)
+# connection_pool.putconn(conn)
+
 
 @app.route('/db2')
 def hello_world():
     with conn.cursor() as cur:
         cur.execute('SELECT salary,address,age,id,name FROM test.company')
         results = cur.fetchall()
-        #print(results)
+        # print(results)
     return r_json({'posts': jsonify(results)})
-
 
 
 def jsonify(records):
@@ -31,13 +31,14 @@ def jsonify(records):
     """
     
     list_return = []
-    list_keys = ['salary','address','age','id','name']
+    list_keys = ['salary', 'address', 'age', 'id', 'name']
     for r in records:
         
         itens = [i for i in r]
-        itens = zip(list_keys,itens)
-        list_return.append({i[0]:i[1].rstrip() if type(i[1])==str else i[1] for i in itens})
+        itens = zip(list_keys, itens)
+        list_return.append({i[0]:i[1].rstrip() if type(i[1]) == str else i[1] for i in itens})
     return list_return    
+
 
 import logging
 log = logging.getLogger('werkzeug')

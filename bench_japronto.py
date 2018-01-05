@@ -18,16 +18,17 @@ DB_CONFIG = {
     'database': 'test'
 }
 
+
 def jsonify(records):
     """
     Parse asyncpg record response into JSON format
     """
-    #print(records)
+    # print(records)
     list_return = []
     
     for r in records:
         itens = r.items()
-        list_return.append({i[0]:i[1].rstrip() if type(i[1])==str else i[1] for i in itens})
+        list_return.append({i[0]:i[1].rstrip() if type(i[1]) == str else i[1] for i in itens})
     return list_return    
 
 
@@ -36,23 +37,22 @@ def index(request):
     body = ujson.dumps(data)
     return request.Response(text=body)
 
+
 async def setup_db(loop):
-    return await create_pool(**DB_CONFIG,loop=loop, max_size=25)
+    return await create_pool(**DB_CONFIG, loop=loop, max_size=25)
+
 
 async def db(request):
     async with request.app.db.acquire() as conn:
         results = await conn.fetch('SELECT salary,address,age,id,name FROM test.company')
-    #return response.json({'posts': results})
+    # return response.json({'posts': results})
     body = ujson.dumps({'posts': jsonify(results)})
     return request.Response(text=body, headers={'Content-Type': 'application/json'})
-
-
 
 
 app = Application()
 app.db = app.loop.run_until_complete(setup_db(app.loop))
 app.router.add_route('/', index)
 app.router.add_route('/db2', db)
-app.run(port=8001)#,worker_num=4)  
-
+app.run(port=8001)  # ,worker_num=4)  
 
