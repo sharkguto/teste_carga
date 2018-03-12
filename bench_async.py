@@ -31,11 +31,12 @@ def jsonify(records):
     """
     # print(records)
     list_return = []
-    
+
     for r in records:
         itens = r.items()
-        list_return.append({i[0]:i[1].rstrip() if type(i[1]) == str else i[1] for i in itens})
-    return list_return    
+        list_return.append({i[0]: i[1].rstrip() if type(
+            i[1]) == str else i[1] for i in itens})
+    return list_return
     # return [dict(r.items()) for r in records]
 
 
@@ -54,16 +55,14 @@ async def register_db(app, loop):
     app.config['pool'] = await create_pool(**DB_CONFIG, loop=loop, max_size=25)
 
 
-#pprint(LOGGING_CONFIG_DEFAULTS)
+# pprint(LOGGING_CONFIG_DEFAULTS)
 #LOGGING_CONFIG_DEFAULTS['loggers']['sanic.access']['level'] = 'ERROR'
-
 
 
 # log_config=Config.LOGGING,
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8001 , workers=4, debug=None, access_log=False)
-    
-# ab -c100 -n10000 http://127.0.0.1:8000/
+    app.run(host="0.0.0.0", port=8001, workers=4, debug=None, access_log=False)
 
+# ab -c100 -n10000 http://127.0.0.1:8000/

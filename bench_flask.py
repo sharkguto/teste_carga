@@ -29,20 +29,22 @@ def jsonify(records):
     """
     Parse asyncpg record response into JSON format
     """
-    
+
     list_return = []
     list_keys = ['salary', 'address', 'age', 'id', 'name']
     for r in records:
-        
+
         itens = [i for i in r]
         itens = zip(list_keys, itens)
-        list_return.append({i[0]:i[1].rstrip() if type(i[1]) == str else i[1] for i in itens})
-    return list_return    
+        list_return.append({i[0]: i[1].rstrip() if type(
+            i[1]) == str else i[1] for i in itens})
+    return list_return
 
 
 import logging
 log = logging.getLogger('werkzeug')
 log.setLevel(logging.ERROR)
 
-app.run(host="0.0.0.0", port=8001)
 
+if __name__ == "__main__":
+    app.run() #host="0.0.0.0", port=8001
