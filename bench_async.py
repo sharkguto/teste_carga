@@ -52,7 +52,7 @@ async def databaselocao2(request):
 @app.listener('before_server_start')
 async def register_db(app, loop):
     # Create a database connection pool
-    app.config['pool'] = await create_pool(**DB_CONFIG, loop=loop, max_size=25)
+    app.config['pool'] = await create_pool(**DB_CONFIG, loop=loop, max_size=20)
 
 
 # pprint(LOGGING_CONFIG_DEFAULTS)

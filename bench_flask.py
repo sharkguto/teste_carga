@@ -10,7 +10,7 @@ DB_CONFIG = {
     'database': 'test'
 }
 
-connection_pool = pool.ThreadedConnectionPool(10, 25, **DB_CONFIG)
+connection_pool = pool.ThreadedConnectionPool(10, 80, **DB_CONFIG)
 conn = connection_pool.getconn()
 # use conn, then:
 # connection_pool.putconn(conn)
