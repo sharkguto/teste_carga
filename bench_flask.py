@@ -1,7 +1,10 @@
 from flask import Flask
-app = Flask(__name__)
 from psycopg2 import pool
 from flask import jsonify as r_json
+import logging
+
+app = Flask(__name__)
+
 DB_CONFIG = {
     'host': '127.0.0.1',
     'user': 'gustavo',
@@ -41,10 +44,9 @@ def jsonify(records):
     return list_return
 
 
-import logging
 log = logging.getLogger('werkzeug')
 log.setLevel(logging.ERROR)
 
 
 if __name__ == "__main__":
-    app.run() #host="0.0.0.0", port=8001
+    app.run()  # host="0.0.0.0", port=8001
