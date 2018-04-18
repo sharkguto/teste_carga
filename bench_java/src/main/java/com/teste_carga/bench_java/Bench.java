@@ -2,11 +2,13 @@ package com.teste_carga.bench_java;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.postgresql.ds.PGPoolingDataSource;
+//import org.postgresql.ds.PGPoolingDataSource;
+import org.postgresql.*;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -45,7 +47,7 @@ public class Bench {
 
         stmt = conn.createStatement();
         rs = stmt.executeQuery(query);
-        List posts = new ArrayList<Model>();
+        List<Model> posts = new ArrayList<Model>();
 
         while (rs.next()) {
             Float salary = rs.getFloat(1);
@@ -63,8 +65,13 @@ public class Bench {
 
         }
         mm = new Model2(posts);
-        stmt.close();
-        conn.close();
+
+        if (conn != null) {
+            try {
+                conn.close();
+            } catch (SQLException e) {
+            }
+        }
 
         return mm;
     }

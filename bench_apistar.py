@@ -1,9 +1,6 @@
-from flask import Flask
+from apistar import App, Route
 from psycopg2 import pool
-from flask import jsonify as r_json
 import logging
-
-app = Flask(__name__)
 
 DB_CONFIG = {
     'host': '127.0.0.1',
@@ -15,16 +12,13 @@ DB_CONFIG = {
 
 connection_pool = pool.ThreadedConnectionPool(10, 80, **DB_CONFIG)
 conn = connection_pool.getconn()
-# use conn, then:
-# connection_pool.putconn(conn)
 
 
-@app.route('/db2')
-def hello_world():
+def db2(name=None):
     with conn.cursor() as cur:
         cur.execute('SELECT salary,address,age,id,name FROM test.company')
         results = cur.fetchall()
-    return r_json({'posts': jsonify(results)})
+    return {'posts': jsonify(results)}
 
 
 def jsonify(records):
@@ -43,9 +37,14 @@ def jsonify(records):
     return list_return
 
 
+routes = [
+    Route('/db2', method='GET', handler=db2),
+]
+
+app = App(routes=routes)
+
 log = logging.getLogger('werkzeug')
 log.setLevel(logging.ERROR)
 
-
-if __name__ == "__main__":
-    app.run()  # host="0.0.0.0", port=8001
+if __name__ == '__main__':
+    app.serve('127.0.0.1', 5000, use_debugger=False, use_reloader=False)
