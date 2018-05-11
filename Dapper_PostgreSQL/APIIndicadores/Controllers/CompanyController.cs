@@ -7,15 +7,15 @@ namespace APIIndicadores.Controllers {
     [Route ("/db2")]
     public class CompanyController : Controller {
         [HttpGet]
-        public IActionResult Get (
-            [FromServices] CompanyDAO dao) {
-            var result = dao.ListarTodosSync ();
-            return Ok (result);
-        }
-        // public async Task<IActionResult> Get (
+        // public IActionResult Get (
         //     [FromServices] CompanyDAO dao) {
-        //     var result = await dao.ListarTodos ();
+        //     var result = dao.ListarTodosSync ();
         //     return Ok (result);
         // }
+        public async Task<IActionResult> Get (
+            [FromServices] CompanyDAO dao) {
+            var result = await dao.ListarTodosTunning ();
+            return Ok (result);
+        }
     }
 }
