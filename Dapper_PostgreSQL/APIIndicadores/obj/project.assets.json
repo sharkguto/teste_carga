@@ -12635,23 +12635,23 @@
     ]
   },
   "packageFolders": {
-    "/home/CIT/gustavomf/.nuget/packages/": {},
+    "/home/gustavo/.nuget/packages/": {},
     "/usr/share/dotnet/sdk/NuGetFallbackFolder": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/home/CIT/gustavomf/Documents/teste_carga/Dapper_PostgreSQL/APIIndicadores/APIIndicadores.csproj",
+      "projectUniqueName": "/home/gustavo/github-projects/teste_carga/Dapper_PostgreSQL/APIIndicadores/APIIndicadores.csproj",
       "projectName": "APIIndicadores",
-      "projectPath": "/home/CIT/gustavomf/Documents/teste_carga/Dapper_PostgreSQL/APIIndicadores/APIIndicadores.csproj",
-      "packagesPath": "/home/CIT/gustavomf/.nuget/packages/",
-      "outputPath": "/home/CIT/gustavomf/Documents/teste_carga/Dapper_PostgreSQL/APIIndicadores/obj/",
+      "projectPath": "/home/gustavo/github-projects/teste_carga/Dapper_PostgreSQL/APIIndicadores/APIIndicadores.csproj",
+      "packagesPath": "/home/gustavo/.nuget/packages/",
+      "outputPath": "/home/gustavo/github-projects/teste_carga/Dapper_PostgreSQL/APIIndicadores/obj/",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "/usr/share/dotnet/sdk/NuGetFallbackFolder"
       ],
       "configFilePaths": [
-        "/home/CIT/gustavomf/.nuget/NuGet/NuGet.Config"
+        "/home/gustavo/.nuget/NuGet/NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "netcoreapp2.0"

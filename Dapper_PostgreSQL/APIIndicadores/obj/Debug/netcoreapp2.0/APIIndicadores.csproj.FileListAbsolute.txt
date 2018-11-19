@@ -18,3 +18,14 @@
 /home/CIT/gustavomf/Documents/teste_carga/Dapper_PostgreSQL/APIIndicadores/obj/Debug/netcoreapp2.0/APIIndicadores.AssemblyInfo.cs
 /home/CIT/gustavomf/Documents/teste_carga/Dapper_PostgreSQL/APIIndicadores/obj/Debug/netcoreapp2.0/APIIndicadores.dll
 /home/CIT/gustavomf/Documents/teste_carga/Dapper_PostgreSQL/APIIndicadores/obj/Debug/netcoreapp2.0/APIIndicadores.pdb
+/home/gustavo/github-projects/teste_carga/Dapper_PostgreSQL/APIIndicadores/bin/Debug/netcoreapp2.0/APIIndicadores.deps.json
+/home/gustavo/github-projects/teste_carga/Dapper_PostgreSQL/APIIndicadores/bin/Debug/netcoreapp2.0/APIIndicadores.runtimeconfig.json
+/home/gustavo/github-projects/teste_carga/Dapper_PostgreSQL/APIIndicadores/bin/Debug/netcoreapp2.0/APIIndicadores.runtimeconfig.dev.json
+/home/gustavo/github-projects/teste_carga/Dapper_PostgreSQL/APIIndicadores/bin/Debug/netcoreapp2.0/APIIndicadores.dll
+/home/gustavo/github-projects/teste_carga/Dapper_PostgreSQL/APIIndicadores/bin/Debug/netcoreapp2.0/APIIndicadores.pdb
+/home/gustavo/github-projects/teste_carga/Dapper_PostgreSQL/APIIndicadores/obj/Debug/netcoreapp2.0/APIIndicadores.csproj.CoreCompileInputs.cache
+/home/gustavo/github-projects/teste_carga/Dapper_PostgreSQL/APIIndicadores/obj/Debug/netcoreapp2.0/APIIndicadores.AssemblyInfoInputs.cache
+/home/gustavo/github-projects/teste_carga/Dapper_PostgreSQL/APIIndicadores/obj/Debug/netcoreapp2.0/APIIndicadores.AssemblyInfo.cs
+/home/gustavo/github-projects/teste_carga/Dapper_PostgreSQL/APIIndicadores/obj/Debug/netcoreapp2.0/APIIndicadores.dll
+/home/gustavo/github-projects/teste_carga/Dapper_PostgreSQL/APIIndicadores/obj/Debug/netcoreapp2.0/APIIndicadores.pdb
+/home/gustavo/github-projects/teste_carga/Dapper_PostgreSQL/APIIndicadores/obj/Debug/netcoreapp2.0/APIIndicadores.csprojResolveAssemblyReference.cache
