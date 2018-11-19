@@ -17,7 +17,7 @@ DB_CONFIG = {
     'user': 'gustavo',
     'password': 'test',
     'port': '5432',
-    'database': 'test'
+    'database': 'postgres'
 }
 
 Config.REQUEST_TIMEOUT = 20
@@ -63,6 +63,7 @@ async def register_db(app, loop):
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, workers=4, debug=None, access_log=False)
+    app.run(host="0.0.0.0", port=5000, workers=4,
+            debug=False, access_log=False)
 
 # ab -c100 -n10000 http://127.0.0.1:8000/
