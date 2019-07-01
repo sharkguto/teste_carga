@@ -1,0 +1,9 @@
+#connexion==1.5.3
+
+connexion[swagger-ui]==2.2.0
+aiohttp==3.5.4
+aiohttp-jinja2==1.1.0
+Hypercorn==0.5.4
+django
+djangorestframework==3.9.2
+Django==1.11.20

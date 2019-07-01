@@ -1,0 +1,13 @@
+version: '3'
+services:
+  conderp:
+    build:
+      context: .
+      dockerfile: devops/Dockerfile
+    #command: gunicorn -b 0.0.0.0:8000 aulapp.aulapp.wsgi:application
+    ports:
+      - "80:8080"
+    environment:
+      ENVIRONMENT: ${ENVIRONMENT}
+      DUMPDATA: ${DUMPDATA}
+      CONTAINER: ${CONTAINER}

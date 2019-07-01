@@ -1,0 +1,46 @@
+---
+swagger: "2.0"
+info:
+  description: "teste de carga"
+  version: "1"
+  title: "teste de carga"
+host: "0.0.0.0:8080"
+basePath: "/v1"
+tags:
+- name: "pet"
+  description: "Everything about your Pets"
+  externalDocs:
+    description: "Find out more"
+    url: "http://swagger.io"
+- name: "store"
+  description: "Access to Petstore orders"
+- name: "user"
+  description: "Operations about user"
+  externalDocs:
+    description: "Find out more about our store"
+    url: "http://swagger.io"
+schemes:
+- "https"
+- "http"
+consumes:
+- "application/json"
+produces:
+- "application/json"
+paths:
+  /hello/{name}:
+    get:
+      tags:
+      - "teste"
+      summary: ""
+      description: ""
+      operationId: "get_hello"
+      parameters:
+      - name: "name"
+        in: "path"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "hello world"
+      x-swagger-router-controller: "load_server.controllers.teste_controller"
+definitions: {}

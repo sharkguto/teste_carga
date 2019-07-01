@@ -1,0 +1,4 @@
+/conderp-rust-backend/target
+/conderp-rust-backend/**/*.rs.bk
+*.pyc
+*.cache
