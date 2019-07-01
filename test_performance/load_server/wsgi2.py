@@ -1,11 +1,5 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-#
-# wsgi_puro.py
-# @Author : Gustavo Freitas (gustavo.freitas@ies2.com.br)
-# @Link   : 
-# @Date   : 2/22/2019, 5:14:56 PM
-
 
 # flask puro raiz
 
