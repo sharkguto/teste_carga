@@ -1,0 +1,28 @@
+version: '3'
+
+services:
+  # db-mysql:
+  #   build:
+  #     context: .
+  #     dockerfile: devops/mysql.dockerfile
+  #   ports:
+  #     - "3306:3306"
+  #   environment:
+  #     MYSQL_USER: gustavo
+  #     MYSQL_PASSWORD: test 
+  #     MYSQL_ROOT_PASSWORD: test
+  db-postgres:
+    build:
+      context: .
+      dockerfile: devops/postgres.dockerfile
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: gustavo
+      POSTGRES_PASSWORD: test
+      TZ: GMT
+
+  # adminer:
+  #   image: adminer
+  #   ports:
+  #     - 8080:8080

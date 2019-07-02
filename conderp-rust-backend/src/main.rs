@@ -1,23 +1,9 @@
-use futures::IntoFuture;
+use actix_web::{HttpServer,middleware,App,web,HttpResponse};
 
-use actix_web::{get, middleware, web, App, Error, HttpRequest, HttpResponse, HttpServer};
+mod controllers;
 
-#[get("/v1/hello/{name}")]
-fn index(req: HttpRequest, name: web::Path<String>) -> String {
-    //println!("REQ: {:?}", req);
-    format!("Hello sync: {}!\r\n", name)
-}
-
-fn index_async(_req: HttpRequest,name: web::Path<String>) -> impl IntoFuture<Item = String, Error = Error> {
-//impl IntoFuture<Item = &'static str, Error = Error> {
-    //println!("REQ: {:?}", req);
-    Ok(format!("Hello async: {}!\r\n", name))
-}
-
-#[get("/")]
-fn no_params() -> &'static str {
-    "Hello world!\r\n"
-}
+use controllers::hello::{ index_async, index, no_params};
+use controllers::loadtest::{db2,db2_async };
 
 fn main() -> std::io::Result<()> {
     std::env::set_var("RUST_LOG", "actix_server=info,actix_web=error");
@@ -30,11 +16,18 @@ fn main() -> std::io::Result<()> {
             .wrap(middleware::Logger::default())
             .service(index)
             .service(no_params)
+            .service(db2)
             .service(
                 web::resource("/v2/hello/{name}")
                     .wrap(middleware::DefaultHeaders::new().header("X-Version-R2", "0.3"))
                     .default_service(web::route().to(|| HttpResponse::MethodNotAllowed()))
                     .route(web::get().to_async(index_async)),
+            )
+            .service(
+                web::resource("/db2s")
+                    .wrap(middleware::DefaultHeaders::new().header("X-Version-R2", "0.3"))
+                    .default_service(web::route().to(|| HttpResponse::MethodNotAllowed()))
+                    .route(web::get().to_async(db2_async)),
             )
             .service(web::resource("/").to(|| "Test\r\n"))
     })
