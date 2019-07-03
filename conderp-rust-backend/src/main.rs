@@ -1,9 +1,9 @@
-use actix_web::{HttpServer,middleware,App,web,HttpResponse};
+use actix_web::{middleware, web, App, HttpResponse, HttpServer};
 
 mod controllers;
 
-use controllers::hello::{ index_async, index, no_params};
-use controllers::loadtest::{db2,db2_async };
+use controllers::hello::{index, index_async, no_params};
+use controllers::loadtest::{db2, db2_async};
 
 fn main() -> std::io::Result<()> {
     std::env::set_var("RUST_LOG", "actix_server=info,actix_web=error");
