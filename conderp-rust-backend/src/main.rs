@@ -23,10 +23,10 @@ fn main() -> std::io::Result<()> {
             .wrap(middleware::DefaultHeaders::new().header("X-Version", "0.2"))
             .wrap(middleware::Compress::default())
             .wrap(middleware::Logger::default())
-            .route("/db2", web::get().to(db2))
+            //.route("/db2", web::get().to(db2))
+            .service(db2)
             .service(index)
             .service(no_params)
-            //.service(db2)
             .service(
                 web::resource("/v2/hello/{name}")
                     .wrap(middleware::DefaultHeaders::new().header("X-Version-R2", "0.3"))
