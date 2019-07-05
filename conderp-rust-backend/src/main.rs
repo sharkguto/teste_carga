@@ -1,22 +1,32 @@
 use actix_web::{middleware, web, App, HttpResponse, HttpServer};
 
 mod controllers;
+mod interfaces;
 
+use interfaces::db::{init_pool};
 use controllers::hello::{index, index_async, no_params};
 use controllers::loadtest::{db2, db2_async};
+
+
 
 fn main() -> std::io::Result<()> {
     std::env::set_var("RUST_LOG", "actix_server=info,actix_web=error");
     env_logger::init();
 
-    HttpServer::new(|| {
+    let pool = init_pool();
+
+    
+
+    HttpServer::new(move || {
         App::new()
+            .data(pool.clone())
             .wrap(middleware::DefaultHeaders::new().header("X-Version", "0.2"))
             .wrap(middleware::Compress::default())
             .wrap(middleware::Logger::default())
+            .route("/db2", web::get().to(db2))
             .service(index)
             .service(no_params)
-            .service(db2)
+            //.service(db2)
             .service(
                 web::resource("/v2/hello/{name}")
                     .wrap(middleware::DefaultHeaders::new().header("X-Version-R2", "0.3"))

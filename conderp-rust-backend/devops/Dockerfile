@@ -17,7 +17,7 @@ COPY ./src ./src
 
 # build for release
 #RUN rm ./target/release/deps/conderp*
-RUN cargo build --release
+RUN RUSTFLAGS="-C target-cpu=native" cargo build --release
 
 FROM debian:stretch
 

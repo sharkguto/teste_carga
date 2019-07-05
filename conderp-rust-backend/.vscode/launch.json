@@ -7,15 +7,15 @@
         {
             "type": "lldb",
             "request": "launch",
-            "name": "Debug executable 'conderp-rust-backend'",
+            "name": "Debug executable 'conderp'",
             "cargo": {
                 "args": [
                     "build",
-                    "--bin=conderp-rust-backend",
+                    "--bin=conderp",
                     "--package=conderp-rust-backend"
                 ],
                 "filter": {
-                    "name": "conderp-rust-backend",
+                    "name": "conderp",
                     "kind": "bin"
                 }
             },
@@ -25,16 +25,16 @@
         {
             "type": "lldb",
             "request": "launch",
-            "name": "Debug unit tests in executable 'conderp-rust-backend'",
+            "name": "Debug unit tests in executable 'conderp'",
             "cargo": {
                 "args": [
                     "test",
                     "--no-run",
-                    "--bin=conderp-rust-backend",
+                    "--bin=conderp",
                     "--package=conderp-rust-backend"
                 ],
                 "filter": {
-                    "name": "conderp-rust-backend",
+                    "name": "conderp",
                     "kind": "bin"
                 }
             },
