@@ -42,3 +42,6 @@ runForever()
 #sudo sysctl net.ipv4.ip_local_port_range="15000 61000"
 
 #wrk -c 2046 -t 4 http://192.168.0.134:8080/json -d 400
+
+# sudo sysctl net.ipv4.tcp_tw_recycle=1
+# sudo sysctl net.ipv4.tcp_tw_reuse=1 
