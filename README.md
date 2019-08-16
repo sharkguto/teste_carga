@@ -31,3 +31,9 @@ max_parallel_workers_per_gather=2   # the default actually, so just as a reminde
 shared_preload_libraries='pg_stat_statements'   # for storing/analyzing test results
 logging_collector=on
 ```
+
+## uvcorn
+
+```bash
+gunicorn bench_blacksheep:app --workers=8 -b "0.0.0.0:8080" --worker-class=uvicorn.workers.UvicornWorker --log-level error
+```
