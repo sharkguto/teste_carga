@@ -18,9 +18,10 @@ services:
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_USER: gustavo
-      POSTGRES_PASSWORD: test
-      TZ: GMT
+      - POSTGRES_USER=gustavo
+      - POSTGRES_PASSWORD=test
+      - POSTGRES_DB=postgres
+      - TZ=GMT
 
   # adminer:
   #   image: adminer
