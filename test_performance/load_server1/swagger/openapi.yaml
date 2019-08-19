@@ -20,7 +20,7 @@ paths:
   /secret:
     get:
       summary: Return secret string
-      operationId: load_server3.controllers.app.get_secret
+      operationId: load_server1.controllers.app.get_secret
       responses:
         '200':
           description: secret response
@@ -40,4 +40,4 @@ components:
     basic:
       type: http
       scheme: basic
-      x-basicInfoFunc: load_server3.controllers.app.basic_auth
+      x-basicInfoFunc: load_server1.controllers.app.basic_auth
