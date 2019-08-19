@@ -12,5 +12,7 @@ skipExt = @["nim"]
 
 requires "nim >= 0.20.0"
 requires "jester >= 0.4.3"
+requires "pg >= 0.1.0"
+requires "print >= 0.1.0"
 #requires "xander >= 0.6.0"
 #requires "regex"

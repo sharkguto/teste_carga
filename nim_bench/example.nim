@@ -1,27 +1,52 @@
-# import xander
-
-# get "/":
-#   respond "Hello World!"
-
-# runForever(8080)
-
-
+import asyncdispatch, jester, os, strutils
 import json
-
-import jester, asyncdispatch
-
-settings:
-  port = Port(8080)
+#import pg
+import db_postgres # -> use libpq
 
 
-routes:
+#let pool = newAsyncPool("localhost", "gustavo", "test", "postgres", 20)
+let db = open("localhost", "gustavo", "test", "postgres")
+
+router myrouter:
   get "/json":
-    var data = $(%*{"message": "Hello, World!"})
-    resp data, "application/json"
+    const rows = db.fastRows(sql"SELECT 1")
+    for row in rows:
+      echo row
+    resp $(%*{"message": "Hello, World!"}), "application/json"
 
-  get "/plaintext":
-    const data = "Hello, World!"
-    resp data, "text/plain"
+proc main() =
+  
+  let port = 8080.Port #paramStr(1).parseInt().Port
+  let settings = newSettings(port = port)
+  var jester = initJester(myrouter, settings = settings)
+  jester.serve()
+
+when isMainModule:
+  main()
+
+# import json
+
+# import jester, asyncdispatch
+# import pg
+# #import db_postgres # -> use libpq
+
+# #let db = open("localhost", "gustavo", "test", "postgres")
+# let pool = newAsyncPool("localhost", "gustavo", "test", "postgres", 20)
+
+# settings:
+#   port = Port(8080)
+
+
+# routes:
+#   get "/json":
+#     let rows = waitFor pg.rows(sql"SELECT salary,address,age,id,name FROM test.company")
+
+#     var data = $(%*{"message": "Hello, World!"})
+#     resp data, "application/json"
+
+#   get "/plaintext":
+#     const data = "Hello, World!"
+#     resp data, "text/plain"
 
 
 runForever()
@@ -45,3 +70,4 @@ runForever()
 
 # sudo sysctl net.ipv4.tcp_tw_recycle=1
 # sudo sysctl net.ipv4.tcp_tw_reuse=1 
+#wrk -c 2046 -t 4 http://0.0.0.0:8080/json -d 400
