@@ -1,0 +1,1 @@
+CREATE extension "uuid-ossp";
