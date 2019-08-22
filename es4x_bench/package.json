@@ -1,0 +1,20 @@
+{
+  "version": "1.0.0",
+  "description": "This is a ES4X empty project.",
+  "main": "index.js",
+  "scripts": {
+    "test": "es4x-launcher test js:index.test.js",
+    "postinstall": "es4x install",
+    "start": "es4x-launcher"
+  },
+  "keywords": [],
+  "author": "Gustavo",
+  "license": "MIT",
+  "name": "bench-x",
+  "devDependencies": {
+    "@vertx/unit": "^3.8.0"
+  },
+  "dependencies": {
+    "@vertx/core": "^3.8.0"
+  }
+}

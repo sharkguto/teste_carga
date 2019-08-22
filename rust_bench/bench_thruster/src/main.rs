@@ -63,6 +63,7 @@ fn not_found(mut context: Ctx, _next: impl Fn(Ctx) -> MiddlewareReturnValue<Ctx>
 
 fn main() {
   dotenv().ok();
+  std::env::set_var("RUST_LOG", "actix_server=info,actix_web=error");
 
   let mut app = App::create(generate_context);
 
