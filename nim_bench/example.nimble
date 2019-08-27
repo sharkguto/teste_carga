@@ -6,7 +6,7 @@ description   = "test bench"
 license       = "MIT"
 
 bin           = @["example"]
-skipExt = @["nim"]
+skipExt       = @["nim"]
 
 # Dependencies
 

@@ -10,3 +10,4 @@ Django==1.11.20
 aiohttp_jinja2
 aiohttp
 aiohttp-swagger==1.0.9
+fastapi

@@ -52,3 +52,18 @@ hypercorn star_test:app -k uvloop --workers=8 -b "0.0.0.0:8080"
 uwsgi --http :8080 --wsgi-file load_server/wsgi_async.py --master --processes 8
 
 uwsgi --http :8080 --wsgi-file load_server/wsgi_async.py --master --processes 8 -l 128 --disable-logging
+
+
+gunicorn load_server3:application --workers=4 -b "0.0.0.0:8080" --worker-class=aiohttp.UvicornWorker --chdir load_server3/
+
+gunicorn load_server3:application --workers=8 -b "0.0.0.0:8080" --worker-class=aiohttp.worker.GunicornWebWorker --chdir load_server3/
+
+gunicorn load_server3:application --workers=8 -b "0.0.0.0:8080" --worker-class=aiohttp.GunicornUVLoopWebWorker --chdir load_server3/
+
+
+sudo pip3 install git+https://github.com/aio-libs/aiohttp.git
+
+sudo apt install libwebsockets-dev 
+
+
+--workers 8
