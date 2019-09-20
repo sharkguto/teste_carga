@@ -77,6 +77,8 @@ when isMainModule:
 
 #ulimit -n 63536
 #nim c -d:release --threads:off --opt:speed --stackTrace:off example.nim -> for async
-#nim c -d:release --threads:on --opt:speed --stackTrace:off example.nim
+#nim c -d:release --threads:on --opt:speed --stackTrace:off --gc:boehm example.nim
 #nim c -d:release --threads:on --opt:speed --stackTrace:off --showAllMismatches:on example.nim
 #nimble install jester@#head
+#nimble install pg@#head
+#nimble install print@#head
