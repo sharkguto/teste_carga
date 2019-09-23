@@ -82,3 +82,5 @@ when isMainModule:
 #nimble install jester@#head
 #nimble install pg@#head
 #nimble install print@#head
+
+#nim c -d:release --threads:on --opt:speed --stackTrace:on --threadAnalysis:off example.nim
