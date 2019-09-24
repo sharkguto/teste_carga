@@ -32,7 +32,7 @@ proc rowizer(rec: seq[string]): JsonNode =
 
 proc exec_query_async(): Future[seq[JsonNode]] {.async.} =
     var
-        j: seq[JsonNode]
+        j : seq[JsonNode] 
         #j {.threadvar.}: seq[JsonNode]
 
     let rows = await pool.rows(sql"SELECT salary,address,age,id,name FROM test.company",
@@ -58,7 +58,7 @@ proc exec_query(): seq[JsonNode] =
 router myrouter:
     get "/db2":
         var j_data = await exec_query_async()
-        resp $(%*j_data), "application/json"
+        resp $(%*j_data), "application/json" 
     get "/json":
         var j_data = exec_query()
         resp $(%*j_data), "application/json"
@@ -84,3 +84,4 @@ when isMainModule:
 #nimble install print@#head
 
 #nim c -d:release --threads:on --opt:speed --stackTrace:on --threadAnalysis:off example.nim
+#wrk -c 4096 -t 4 http://localhost:8080/json -d 15 --latency

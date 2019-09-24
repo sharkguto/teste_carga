@@ -32,9 +32,9 @@ proc onRequest(req: Request): Future[void] {.async.} =
   if req.httpMethod == some(HttpGet):
     case req.path.get()
     of "/json":
-      #var data = $(%*{"message": "Hello, World!"})
+      var data = $(%*{"message": "Hello, World!"})
       const headers = "Content-Type: application/json"
-      var data = await exec_query_async()
+      #var data = await exec_query_async()
       req.send(Http200, $(data), headers)
     of "/plaintext":
       const data = "Hello, World!"

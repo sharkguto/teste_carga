@@ -1,0 +1,67 @@
+{
+  "format": 1,
+  "restore": {
+    "/home/gustavo/git-projects/teste_carga/bench_f#/bench_c#/bench_c#.csproj": {}
+  },
+  "projects": {
+    "/home/gustavo/git-projects/teste_carga/bench_f#/bench_c#/bench_c#.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/home/gustavo/git-projects/teste_carga/bench_f#/bench_c#/bench_c#.csproj",
+        "projectName": "bench_c#",
+        "projectPath": "/home/gustavo/git-projects/teste_carga/bench_f#/bench_c#/bench_c#.csproj",
+        "packagesPath": "/home/gustavo/.nuget/packages/",
+        "outputPath": "/home/gustavo/git-projects/teste_carga/bench_f#/bench_c#/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/home/gustavo/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "netcoreapp3.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "netcoreapp3.0": {
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "netcoreapp3.0": {
+          "dependencies": {
+            "npgsql": {
+              "target": "Package",
+              "version": "[4.0.10, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.AspNetCore.App": {
+              "privateAssets": "none"
+            },
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/snap/dotnet-sdk/49/sdk/3.0.100/RuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}

@@ -14,9 +14,9 @@ import asyncio
 DB_CONFIG = {
     'host': '127.0.0.1',
     'user': 'gustavo',
-    'password': 'teste',
+    'password': 'test',
     'port': '5432',
-    'database': 'test'
+    'database': 'postgres'
 }
 
 

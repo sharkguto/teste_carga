@@ -19,7 +19,6 @@ struct App {
 pub mut:
 	vweb vweb.Context // TODO embed 
 	db pg.DB
-	cur_user User 
 }
 
 fn main() {
