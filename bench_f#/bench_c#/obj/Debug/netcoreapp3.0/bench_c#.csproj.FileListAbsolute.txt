@@ -18,3 +18,4 @@
 /home/gustavo/git-projects/teste_carga/bench_f#/bench_c#/obj/Debug/netcoreapp3.0/bench_c#.pdb
 /home/gustavo/git-projects/teste_carga/bench_f#/bench_c#/bin/Debug/netcoreapp3.0/Npgsql.dll
 /home/gustavo/git-projects/teste_carga/bench_f#/bench_c#/obj/Debug/netcoreapp3.0/bench_c#.csproj.CopyComplete
+/home/gustavo/git-projects/teste_carga/bench_f#/bench_c#/bin/Debug/netcoreapp3.0/omnisharp.json

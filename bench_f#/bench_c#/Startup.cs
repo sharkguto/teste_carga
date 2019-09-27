@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using bench_c_.Services;
 
 namespace bench_c_
 {
@@ -18,6 +19,8 @@ namespace bench_c_
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+            PsqlService.StartPool("User ID=gustavo;Password=test;Host=localhost;Port=5432;Database=postgres;Pooling=true;MinPoolSize={0};MaxPoolSize={0};",80);
+            
         }
 
         public IConfiguration Configuration { get; }
