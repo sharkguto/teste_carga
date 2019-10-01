@@ -1,33 +1,24 @@
 module main
 
-import (
-	net
-	http 
-	vweb
-	os
-	pg
-)
+import vweb
 
 const (
-	port = 8080
-	db_name = 'postgres'
-	db_user = 'gustavo'
-    db_pass = 'test'
+	Port = 8082
 )
 
 struct App {
 pub mut:
-	vweb vweb.Context // TODO embed 
-	db pg.DB
+	vweb vweb.Context // TODO embed
 }
 
 fn main() {
-	println('Running vorum on http://0.0.0.0:$port')
-	vweb.run<App>(port)
+	vweb.run<App>(Port)
 }
 
-
 pub fn (app mut App) init() {
-	app.db = pg.connect(db_name, db_user,db_pass) 
-	
+	app.vweb.handle_static('.')
+}
+
+pub fn (app mut App) json_endpoint() {
+	app.vweb.json('{"a": 3}')
 }

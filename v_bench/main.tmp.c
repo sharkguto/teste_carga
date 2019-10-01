@@ -44,6 +44,8 @@
 #define OPTION_CAST(x) (x)
 
 #ifdef _WIN32
+#define WINVER 0x0600
+#define _WIN32_WINNT 0x0600
 #define WIN32_LEAN_AND_MEAN
 #define _UNICODE
 #define UNICODE
@@ -116,6 +118,7 @@ typedef map map_string;
 #define _PUSH_MANY(arr, val, tmp, tmp_typ) {tmp_typ tmp = (val); array__push_many(arr, tmp.data, tmp.len);}
 #define _IN(typ, val, arr) array_##typ##_contains(arr, val)
 #define _IN_MAP(val, m) map__exists(m, val)
+#define DEFAULT_EQUAL(a, b) (a == b)
 //================================== GLOBALS =================================*/
 byteptr g_str_buf;
 int load_so(byteptr);
@@ -139,7 +142,7 @@ return  new_array ( len , cap , elm_size ) ;
  }
  array new_array_from_c_array(int len, int cap, int elm_size, void* c_array) {
  
-array arr= (array) { .len =  len , .cap =  cap , .element_size =  elm_size , .data =  v_malloc ( cap * elm_size ) } ;
+array arr= (array) { .len =  len , .cap =  cap , .element_size =  elm_size , .data =  v_calloc ( cap * elm_size ) } ;
  
  memcpy ( arr .data ,  c_array ,  len * elm_size ) ;
  
@@ -155,7 +158,7 @@ return  arr ;
  }
  array array_repeat_old(void* val, int nr_repeats, int elm_size) {
  
-array arr= (array) { .len =  nr_repeats , .cap =  nr_repeats , .element_size =  elm_size , .data =  v_malloc ( nr_repeats * elm_size ) } ;
+array arr= (array) { .len =  nr_repeats , .cap =  nr_repeats , .element_size =  elm_size , .data =  v_calloc ( nr_repeats * elm_size ) } ;
  
  for (
 int i= 0  ;  i < nr_repeats  ;  i ++ ) { 
@@ -171,7 +174,7 @@ return  arr ;
  }
  array array_repeat(array a, int nr_repeats) {
  
-array arr= (array) { .len =  nr_repeats , .cap =  nr_repeats , .element_size =  a .element_size , .data =  v_malloc ( nr_repeats * a .element_size ) } ;
+array arr= (array) { .len =  nr_repeats , .cap =  nr_repeats , .element_size =  a .element_size , .data =  v_calloc ( nr_repeats * a .element_size ) } ;
  
 void* val=(byte*) a .data + 0 ;
  
@@ -338,7 +341,7 @@ int cap= ( arr ->len + 1 ) * 2 ;
  
  if ( arr ->cap == 0 ) {
  
- arr ->data  =  v_malloc ( cap * arr ->element_size ) ;
+ arr ->data  =  v_calloc ( cap * arr ->element_size ) ;
  
  }
   else { 
@@ -366,7 +369,7 @@ int cap= ( arr ->len + size ) * 2 ;
  
  if ( arr ->cap == 0 ) {
  
- arr ->data  =  v_malloc ( cap * arr ->element_size ) ;
+ arr ->data  =  v_calloc ( cap * arr ->element_size ) ;
  
  }
   else { 
@@ -388,7 +391,7 @@ int cap= ( arr ->len + size ) * 2 ;
  }
  array array_reverse(array a) {
  
-array arr= (array) { .len =  a .len , .cap =  a .cap , .element_size =  a .element_size , .data =  v_malloc ( a .cap * a .element_size ) } ;
+array arr= (array) { .len =  a .len , .cap =  a .cap , .element_size =  a .element_size , .data =  v_calloc ( a .cap * a .element_size ) } ;
  
  for (
 int i= 0  ;  i < a .len  ;  i ++ ) { 
@@ -404,7 +407,7 @@ return  arr ;
  }
  array array_clone(array a) {
  
-array arr= (array) { .len =  a .len , .cap =  a .cap , .element_size =  a .element_size , .data =  v_malloc ( a .cap * a .element_size ) } ;
+array arr= (array) { .len =  a .len , .cap =  a .cap , .element_size =  a .element_size , .data =  v_calloc ( a .cap * a .element_size ) } ;
  
  memcpy ( arr .data ,  a .data ,  a .cap * a .element_size ) ;
  
@@ -504,7 +507,7 @@ return  0 ;
  }
  void array_int_sort(array_int* a) {
  
- array_sort_with_compare( a , compare_ints ) ;
+ array_sort_with_compare( a ,& /*112 EXP:"void*" GOT:"fn (int*,int*) int" */ compare_ints ) ;
  
  }
  int vstrlen(byte* s) {
@@ -600,7 +603,7 @@ int i= string_index( rem , rep ) ;
  }
  ;
  
-_PUSH(& idxs , ( rstart + i ), tmp9, int) ;
+_PUSH(& idxs , ( /*typ = array_int   tmp_typ=int*/ rstart + i ), tmp9, int) ;
  
  i  +=  rep .len ;
  
@@ -823,7 +826,7 @@ array_string res=new_array_from_c_array(0, 0, sizeof(string), (string[]) {   0 }
  
  if ( delim .len == 0 ) {
  
-_PUSH(& res , ( s ), tmp28, string) ;
+_PUSH(& res , ( /*typ = array_string   tmp_typ=string*/ s ), tmp28, string) ;
  
 return  res ;
  
@@ -880,7 +883,7 @@ string val= string_substr( s , start , i ) ;
  }
  ;
  
-_PUSH(& res , ( string_trim_space( val ) ), tmp35, string) ;
+_PUSH(& res , ( /*typ = array_string   tmp_typ=string*/ string_trim_space( val ) ), tmp35, string) ;
  
  }
  ;
@@ -904,7 +907,7 @@ array_string res=new_array_from_c_array(0, 0, sizeof(string), (string[]) {   0 }
  
  if ( ((int)( delim ) ) == 0 ) {
  
-_PUSH(& res , ( s ), tmp37, string) ;
+_PUSH(& res , ( /*typ = array_string   tmp_typ=string*/ s ), tmp37, string) ;
  
 return  res ;
  
@@ -935,7 +938,7 @@ string val= string_substr( s , start , i ) ;
  
  if ( val .len > 0 ) {
  
-_PUSH(& res , ( val ), tmp43, string) ;
+_PUSH(& res , ( /*typ = array_string   tmp_typ=string*/ val ), tmp43, string) ;
  
  }
  ;
@@ -983,7 +986,7 @@ bool last= i == s .len - 1 ;
  
 string line= string_substr( s , start , i ) ;
  
-_PUSH(& res , ( line ), tmp49, string) ;
+_PUSH(& res , ( /*typ = array_string   tmp_typ=string*/ line ), tmp49, string) ;
  
  start  =  i + 1 ;
  
@@ -1047,7 +1050,7 @@ int i= 0  ;  i < len  ;  i ++ ) {
 return  res ;
  
  }
- int string_index_old(string s, string p) {
+ int string_index(string s, string p) {
  
  if ( p .len > s .len ) {
  
@@ -1063,21 +1066,17 @@ int i= 0 ;
  
 int j= 0 ;
  
-int ii= i ;
- 
- while ( j < p .len  &&  s .str[ ii ]/*rbyte 0*/ == p .str[ j ]/*rbyte 0*/ ) {
+ while ( j < p .len  &&  s .str[ i + j ]/*rbyte 0*/ == p .str[ j ]/*rbyte 0*/ ) {
  
  
  j ++ ;
- 
- ii ++ ;
  
  }
  ;
  
  if ( j == p .len ) {
  
-return  i - p .len + 1 ;
+return  i ;
  
  }
  ;
@@ -1090,7 +1089,7 @@ return  i - p .len + 1 ;
 return  - 1 ;
  
  }
- int string_index(string s, string p) {
+ int string_index_kmp(string s, string p) {
  
  if ( p .len > s .len ) {
  
@@ -1163,11 +1162,11 @@ return  - 1 ;
  }
  int string_index_any(string s, string chars) {
  
- string tmp64 =  chars;
- array_byte bytes_tmp64 = string_bytes( tmp64 );
+ string tmp63 =  chars;
+ array_byte bytes_tmp63 = string_bytes( tmp63 );
  ;
-for (int tmp65 = 0; tmp65 < tmp64 .len; tmp65 ++) {
- byte c = ((byte *) bytes_tmp64 . data)[tmp65];
+for (int tmp64 = 0; tmp64 < tmp63 .len; tmp64 ++) {
+ byte c = ((byte *) bytes_tmp63 . data)[tmp64];
  
  
 int index= string_index( s , byte_str( c ) ) ;
@@ -1399,12 +1398,12 @@ array_string words= string_split( s , tos2((byte*)" ") ) ;
  
 array_string tit=new_array_from_c_array(0, 0, sizeof(string), (string[]) {   0 }) ;
  
- array_string tmp86 =  words;
- for (int tmp87 = 0; tmp87 < tmp86.len; tmp87++) {
- string word = ((string *) tmp86 . data)[tmp87];
+ array_string tmp85 =  words;
+ for (int tmp86 = 0; tmp86 < tmp85.len; tmp86++) {
+ string word = ((string *) tmp85 . data)[tmp86];
  
  
-_PUSH(& tit , ( string_capitalize( word ) ), tmp88, string) ;
+_PUSH(& tit , ( /*typ = array_string   tmp_typ=string*/ string_capitalize( word ) ), tmp87, string) ;
  
  }
  ;
@@ -1441,9 +1440,9 @@ return  string_left( val , end_pos ) ;
  }
  bool array_string_contains(array_string ar, string val) {
  
- array_string tmp93 =  ar;
- for (int tmp94 = 0; tmp94 < tmp93.len; tmp94++) {
- string s = ((string *) tmp93 . data)[tmp94];
+ array_string tmp92 =  ar;
+ for (int tmp93 = 0; tmp93 < tmp92.len; tmp93++) {
+ string s = ((string *) tmp92 . data)[tmp93];
  
  
  if (string_eq( s , val ) ) {
@@ -1461,9 +1460,9 @@ return  0 ;
  }
  bool array_int_contains(array_int ar, int val) {
  
- array_int tmp95 =  ar;
- for (int i = 0; i < tmp95.len; i++) {
- int s = ((int *) tmp95 . data)[i];
+ array_int tmp94 =  ar;
+ for (int i = 0; i < tmp94.len; i++) {
+ int s = ((int *) tmp94 . data)[i];
  
  
  if ( s == val ) {
@@ -1644,17 +1643,17 @@ return  compare_strings (& /*112 EXP:"string*" GOT:"string" */ aa ,& /*112 EXP:"
  }
  void array_string_sort(array_string* s) {
  
- array_sort_with_compare( s , compare_strings ) ;
+ array_sort_with_compare( s ,& /*112 EXP:"void*" GOT:"fn (string*,string*) int" */ compare_strings ) ;
  
  }
  void array_string_sort_ignore_case(array_string* s) {
  
- array_sort_with_compare( s , compare_lower_strings ) ;
+ array_sort_with_compare( s ,& /*112 EXP:"void*" GOT:"fn (string*,string*) int" */ compare_lower_strings ) ;
  
  }
  void array_string_sort_by_len(array_string* s) {
  
- array_sort_with_compare( s , compare_strings_by_len ) ;
+ array_sort_with_compare( s ,& /*112 EXP:"void*" GOT:"fn (string*,string*) int" */ compare_strings_by_len ) ;
  
  }
  ustring string_ustring(string s) {
@@ -1667,7 +1666,7 @@ int i= 0  ;  i < s .len  ;  i ++ ) {
  
 int char_len= utf8_char_len ( s .str [/*ptr*/ i ]/*rbyte 0*/ ) ;
  
-_PUSH(& res .runes , ( i ), tmp109, int) ;
+_PUSH(& res .runes , ( /*typ = array_int   tmp_typ=int*/ i ), tmp108, int) ;
  
  i  +=  char_len - 1 ;
  
@@ -1716,21 +1715,220 @@ array_set(&/*q*/ res .runes , j , & (int []) {  i }) ;
 return  res ;
  
  }
+ bool ustring_eq(ustring u, ustring a) {
+ 
+ if ( u .len != a .len  || string_ne( u .s , a .s ) ) {
+ 
+return  0 ;
+ 
+ }
+ ;
+ 
+return  1 ;
+ 
+ }
+ bool ustring_ne(ustring u, ustring a) {
+ 
+return  ! ustring_eq( u , a ) ;
+ 
+ }
+ bool ustring_lt(ustring u, ustring a) {
+ 
+return string_lt( u .s , a .s ) ;
+ 
+ }
+ bool ustring_le(ustring u, ustring a) {
+ 
+return  ustring_lt( u , a )  ||  ustring_eq( u , a ) ;
+ 
+ }
+ bool ustring_gt(ustring u, ustring a) {
+ 
+return  ! ustring_le( u , a ) ;
+ 
+ }
+ bool ustring_ge(ustring u, ustring a) {
+ 
+return  ! ustring_lt( u , a ) ;
+ 
+ }
+ ustring ustring_add(ustring u, ustring a) {
+ 
+ustring res= (ustring) { .s = string_add( u .s , a .s ) , .runes =  new_array ( 0 , u .s .len + a .s .len , sizeof( int) ) , .len =  0 } ;
+ 
+int j= 0 ;
+ 
+ for (
+int i= 0  ;  i < u .s .len  ;  i ++ ) { 
+ 
+ 
+int char_len= utf8_char_len ( u .s .str [/*ptr*/ i ]/*rbyte 0*/ ) ;
+ 
+_PUSH(& res .runes , ( /*typ = array_int   tmp_typ=int*/ j ), tmp117, int) ;
+ 
+ i  +=  char_len - 1 ;
+ 
+ j  +=  char_len ;
+ 
+ res .len ++ ;
+ 
+ }
+ ;
+ 
+ for (
+int i= 0  ;  i < a .s .len  ;  i ++ ) { 
+ 
+ 
+int char_len= utf8_char_len ( a .s .str [/*ptr*/ i ]/*rbyte 0*/ ) ;
+ 
+_PUSH(& res .runes , ( /*typ = array_int   tmp_typ=int*/ j ), tmp120, int) ;
+ 
+ i  +=  char_len - 1 ;
+ 
+ j  +=  char_len ;
+ 
+ res .len ++ ;
+ 
+ }
+ ;
+ 
+return  res ;
+ 
+ }
+ int ustring_index_after(ustring u, ustring p, int start) {
+ 
+ if ( p .len > u .len ) {
+ 
+return  - 1 ;
+ 
+ }
+ ;
+ 
+int strt= start ;
+ 
+ if ( start < 0 ) {
+ 
+ strt  =  0 ;
+ 
+ }
+ ;
+ 
+ if ( start > u .len ) {
+ 
+return  - 1 ;
+ 
+ }
+ ;
+ 
+int i= strt ;
+ 
+ while ( i < u .len ) {
+ 
+ 
+int j= 0 ;
+ 
+int ii= i ;
+ 
+ while ( j < p .len  && string_eq( ustring_at( u , ii ) , ustring_at( p , j ) ) ) {
+ 
+ 
+ j ++ ;
+ 
+ ii ++ ;
+ 
+ }
+ ;
+ 
+ if ( j == p .len ) {
+ 
+return  i ;
+ 
+ }
+ ;
+ 
+ i ++ ;
+ 
+ }
+ ;
+ 
+return  - 1 ;
+ 
+ }
+ int ustring_count(ustring u, ustring substr) {
+ 
+ if ( u .len == 0  ||  substr .len == 0 ) {
+ 
+return  0 ;
+ 
+ }
+ ;
+ 
+ if ( substr .len > u .len ) {
+ 
+return  0 ;
+ 
+ }
+ ;
+ 
+int n= 0 ;
+ 
+int i= 0 ;
+ 
+ while (1) { 
+ 
+ i  =  ustring_index_after( u , substr , i ) ;
+ 
+ if ( i == - 1 ) {
+ 
+return  n ;
+ 
+ }
+ ;
+ 
+ i  +=  substr .len ;
+ 
+ n ++ ;
+ 
+ }
+ ;
+ 
+return  0 ;
+ 
+ }
  string ustring_substr(ustring u, int _start, int _end) {
  
-int start= ( *(int*) array__get( u .runes , _start) ) ;
+ if ( _start > _end  ||  _start > u .len  ||  _end > u .len  ||  _start < 0  ||  _end < 0 ) {
  
-int end= ( _end >= u .runes .len ) ? ( u .s .len ) : ( ( *(int*) array__get( u .runes , _end) ) ) ;
+ v_panic ( _STR("substr(%d, %d) out of bounds (len=%d)", _start, _end, u .len) ) ;
  
-return  string_substr( u .s , start , end ) ;
+ }
+ ;
+ 
+int end= ( _end >= u .len ) ? ( u .s .len ) : ( ( *(int*) array__get( u .runes , _end) ) ) ;
+ 
+return  string_substr( u .s , ( *(int*) array__get( u .runes , _start) ) , end ) ;
  
  }
  string ustring_left(ustring u, int pos) {
+ 
+ if ( pos >= u .len ) {
+ 
+return  u .s ;
+ 
+ }
+ ;
  
 return  ustring_substr( u , 0 , pos ) ;
  
  }
  string ustring_right(ustring u, int pos) {
+ 
+ if ( pos >= u .len ) {
+ 
+return  tos2((byte*)"") ;
+ 
+ }
+ ;
  
 return  ustring_substr( u , pos , u .len ) ;
  
@@ -1748,6 +1946,13 @@ return  s .str [/*ptr*/ idx ]/*rbyte 0*/ ;
  
  }
  string ustring_at(ustring u, int idx) {
+ 
+ if ( idx < 0  ||  idx >= u .len ) {
+ 
+ v_panic ( _STR("string index out of range: %d / %d", idx, u .runes .len) ) ;
+ 
+ }
+ ;
  
 return  ustring_substr( u , idx , idx + 1 ) ;
  
@@ -1835,9 +2040,9 @@ return  tos2((byte*)"") ;
  
 int len= 0 ;
  
- array_string tmp124 =  a;
- for (int i = 0; i < tmp124.len; i++) {
- string val = ((string *) tmp124 . data)[i];
+ array_string tmp136 =  a;
+ for (int i = 0; i < tmp136.len; i++) {
+ string val = ((string *) tmp136 . data)[i];
  
  
  len  +=  val .len + del .len ;
@@ -1855,9 +2060,9 @@ string res= tos2((byte*)"") ;
  
 int idx= 0 ;
  
- array_string tmp127 =  a;
- for (int i = 0; i < tmp127.len; i++) {
- string val = ((string *) tmp127 . data)[i];
+ array_string tmp139 =  a;
+ for (int i = 0; i < tmp139.len; i++) {
+ string val = ((string *) tmp139 . data)[i];
  
  
  for (
@@ -1945,11 +2150,11 @@ int h= 0 ;
  
  if ( h == 0  &&  s .len > 0 ) {
  
- string tmp136 =  s;
- array_byte bytes_tmp136 = string_bytes( tmp136 );
+ string tmp148 =  s;
+ array_byte bytes_tmp148 = string_bytes( tmp148 );
  ;
-for (int tmp137 = 0; tmp137 < tmp136 .len; tmp137 ++) {
- byte c = ((byte *) bytes_tmp136 . data)[tmp137];
+for (int tmp149 = 0; tmp149 < tmp148 .len; tmp149 ++) {
+ byte c = ((byte *) bytes_tmp148 . data)[tmp149];
  
  
  h  =  h * 31 + ((int)( c ) ) ;
@@ -1977,6 +2182,42 @@ array_byte buf= array_repeat(new_array_from_c_array(1, 1, sizeof(byte), (byte[])
  memcpy ( buf .data , (char*) s .str ,  s .len ) ;
  
 return  buf ;
+ 
+ }
+ string string_repeat(string s, int count) {
+ 
+ if ( count <= 1 ) {
+ 
+return  s ;
+ 
+ }
+ ;
+ 
+byte* ret= v_malloc ( s .len * count + 1 ) ;
+ 
+ int tmp152 =  0;
+ ;
+for (int tmp153 = tmp152; tmp153 <  count; tmp153++) {
+ int i = tmp153;
+ 
+ 
+ int tmp154 =  0;
+ ;
+for (int tmp155 = tmp154; tmp155 <  s .len; tmp155++) {
+ int j = tmp155;
+ 
+ 
+ ret [/*ptr*/ i * s .len + j ]/*rbyte 1*/  =  s .str[ j ]/*rbyte 0*/ ;
+ 
+ }
+ ;
+ 
+ }
+ ;
+ 
+ ret [/*ptr*/ s .len * count ]/*rbyte 1*/  =  0 ;
+ 
+return  (tos2((byte *) ret ) ) ;
  
  }
  void v_exit(int code) {
@@ -2017,7 +2258,7 @@ byte* buffer  [100 ] ;
  
 int nr_ptrs= backtrace ( ((voidptr*)( buffer ) ) ,  100 ) ;
  
- backtrace_symbols_fd ( & /*v*/  buffer [ skipframes ]/*rbyte* 0*/ ,  nr_ptrs - skipframes ,  1 ) ;
+ backtrace_symbols_fd ( ((voidptr*)( & /*v*/  buffer [ skipframes ]/*rbyte* 0*/ ) ) ,  nr_ptrs - skipframes ,  1 ) ;
  
  return ;
  
@@ -2109,12 +2350,25 @@ printf( "V panic: %.*s\n", s.len, s.str ) ;
  
  fprintf ( stderr ,  "%.*s\n" ,  s .len , (char*) s .str ) ;
  
- #else
+ fflush ( stderr ) ;
  
- println ( s ) ;
+ return ;
  
  #endif
  ;
+ 
+ #ifdef __linux__
+ 
+ fprintf ( stderr ,  "%.*s\n" ,  s .len , (char*) s .str ) ;
+ 
+ fflush ( stderr ) ;
+ 
+ return ;
+ 
+ #endif
+ ;
+ 
+ println ( s ) ;
  
  }
  void print(string s) {
@@ -2210,7 +2464,22 @@ return  tos ( buf , vstrlen ( buf ) ) ;
  }
  bool f64_eq(f64 a, f64 b) {
  
-return  ( a - b ) <= DBL_EPSILON ;
+return  fabs ( a - b ) <= DBL_EPSILON ;
+ 
+ }
+ bool f32_eq(f32 a, f32 b) {
+ 
+return  fabsf ( a - b ) <= FLT_EPSILON ;
+ 
+ }
+ bool f64_eqbit(f64 a, f64 b) {
+ 
+return  DEFAULT_EQUAL ( a ,  b ) ;
+ 
+ }
+ bool f32_eqbit(f32 a, f32 b) {
+ 
+return  DEFAULT_EQUAL ( a ,  b ) ;
  
  }
  string int_str(int nn) {
@@ -2418,7 +2687,7 @@ int len= ( n >= ((i64)( 0 ) ) ) ? ( i64_str( n ) .len + 3 ) : ( 19 ) ;
  
 byte* hex= v_malloc ( len ) ;
  
-int count= ((int)( sprintf ( ((char*)( hex ) ) ,  "0x%llx" ,  n ) ) ) ;
+int count= ((int)( sprintf ( ((char*)( hex ) ) ,  "0x%lx" ,  n ) ) ) ;
  
 return  tos ( hex , count ) ;
  
@@ -3200,6 +3469,84 @@ strings__Builder sb= strings__new_builder ( 50 ) ;
 return  strings__Builder_str( sb ) ;
  
  }
+ hashmap new_hashmap(int planned_nr_items) {
+ 
+int cap= planned_nr_items * 3 ;
+ 
+ if ( cap < builtin__min_cap ) {
+ 
+ cap  =  builtin__min_cap ;
+ 
+ }
+ ;
+ 
+ if ( cap > builtin__max_cap ) {
+ 
+ cap  =  builtin__max_cap ;
+ 
+ }
+ ;
+ 
+return  (hashmap) { .cap =  cap , .elm_size =  4 , .table =  _make ( cap , cap , sizeof( hashmapentry) ) , .keys =  new_array(0, 1, sizeof( string )) , .nr_collisions =  0 } ;
+ 
+ }
+ void hashmap_set(hashmap* m, string key, int val) {
+ 
+int hash= ((int)( math__abs ( string_hash( key ) ) ) ) ;
+ 
+int idx= hash % m ->cap ;
+ 
+ if ( ( *(hashmapentry*) array__get( m ->table , idx) ) .key .len != 0 ) {
+ 
+ m ->nr_collisions ++ ;
+ 
+hashmapentry* e= & /*v*/  ( *(hashmapentry*) array__get( m ->table , idx) ) ;
+ 
+ while ( e ->next != 0 ) {
+ 
+ 
+ e  =  e ->next ;
+ 
+ }
+ ;
+ 
+ e ->next  =  (hashmapentry*)memdup(&(hashmapentry)  { key , val , 0 } , sizeof(hashmapentry)) ;
+ 
+ }
+  else { 
+ 
+array_set(&/*q*/ m ->table , idx , & (hashmapentry []) {  (hashmapentry) { key , val , 0 } }) ;
+ 
+ }
+ ;
+ 
+ }
+ int hashmap_get(hashmap* m, string key) {
+ 
+int hash= ((int)( math__abs ( string_hash( key ) ) ) ) ;
+ 
+int idx= hash % m ->cap ;
+ 
+hashmapentry* e= & /*v*/  ( *(hashmapentry*) array__get( m ->table , idx) ) ;
+ 
+ while ( e ->next != 0 ) {
+ 
+ 
+ if (string_eq( e ->key , key ) ) {
+ 
+return  e ->val ;
+ 
+ }
+ ;
+ 
+ e  =  e ->next ;
+ 
+ }
+ ;
+ 
+return  e ->val ;
+ 
+ }
  Option opt_ok(void* data, int size) {
  
  if ( size >= 255 ) {
@@ -3242,7 +3589,7 @@ return  (strings__Builder) { .buf =  new_array(0, 1, sizeof( byte )) , .len =  0
  
  array__push_many(& /* ? */ b ->buf , s .str , s .len ) ;
  
-_PUSH(& b ->buf , ( '\n' ), tmp1, byte) ;
+_PUSH(& b ->buf , ( /*typ = array_byte   tmp_typ=byte*/ '\n' ), tmp1, byte) ;
  
  b ->len  +=  s .len + 1 ;
  
@@ -3402,446 +3749,98 @@ return  tos2((byte*)"") ;
  }
  ;
  
-array_byte arr= array_repeat(new_array_from_c_array(1, 1, sizeof(byte), (byte[]) {  ((byte)( 0 ) )  }) , n + 1 ) ;
- 
- for (
-int i= 0  ;  i < n  ;  i ++ ) { 
- 
- 
-array_set(&/*q*/ arr , i , & (byte []) {  c }) ;
- 
- }
- ;
+array_byte arr= array_repeat(new_array_from_c_array(1, 1, sizeof(byte), (byte[]) {  c  }) , n + 1 ) ;
  
 array_set(&/*q*/ arr , n , & (byte []) {  '\0' }) ;
  
 return  (tos((byte *) arr .data ,  n ) ) ;
  
  }
- Option_string net__hostname() {
+ f64 math__abs(f64 a) {
  
-byte name  [256 ] ;
+ if ( a < 0 ) {
  
-void* res= gethostname ( & /*v*/  name ,  256 ) ;
- 
- if ( res != 0 ) {
- 
-return  v_error ( tos2((byte*)"net.hostname() cannot get the host name") ) ;
+return  - a ;
  
  }
  ;
  
-string tmp3 = OPTION_CAST(string)( tos_clone ( name )); return opt_ok(&tmp3, sizeof(string)) ;
+return  a ;
  
  }
- Option_net__Socket net__socket(int family, int _type, int proto) {
+ f64 math__acos(f64 a) {
  
- #ifdef _WIN32
-  
- struct /*c struct init*/ 
-
-WSAData wsadata ;
- 
-void* res= WSAStartup ( net__WSA_V22 ,  & /*v*/  wsadata ) ;
- 
- if ( res != 0 ) {
- 
-return  v_error ( tos2((byte*)"socket: WSAStartup failed") ) ;
+return  acos ( a ) ;
  
  }
- ;
+ f64 math__asin(f64 a) {
  
- #endif
- ;
- 
-void* sockfd= socket ( family ,  _type ,  proto ) ;
- 
-int one= 1 ;
- 
- setsockopt ( sockfd ,  SOL_SOCKET ,  SO_REUSEADDR ,  & /*v*/  one ,  sizeof( int) ) ;
- 
- if ( sockfd == 0 ) {
- 
-return  v_error ( tos2((byte*)"socket: init failed") ) ;
+return  asin ( a ) ;
  
  }
- ;
+ f64 math__atan(f64 a) {
  
-net__Socket s= (net__Socket) { .sockfd =  sockfd , .family =  family , ._type =  _type , .proto =  proto } ;
- 
-net__Socket tmp6 = OPTION_CAST(net__Socket)( s); return opt_ok(&tmp6, sizeof(net__Socket)) ;
+return  atan ( a ) ;
  
  }
- Option_net__Socket net__socket_udp() {
+ f64 math__atan2(f64 a, f64 b) {
  
-Option_net__Socket tmp7 = OPTION_CAST(Option_net__Socket)( net__socket ( AF_INET , SOCK_DGRAM , IPPROTO_UDP )); return opt_ok(&tmp7, sizeof(net__Socket)) ;
- 
- }
- Option_int net__Socket_setsockopt(net__Socket s, int level, int optname, int* optvalue) {
- 
-void* res= setsockopt ( s .sockfd ,  level ,  optname ,  optvalue ,   ( optvalue ) ) ;
- 
- if ( res < 0 ) {
- 
-return  v_error ( tos2((byte*)"socket: setsockopt failed") ) ;
+return  atan2 ( a ,  b ) ;
  
  }
- ;
+ f64 math__cbrt(f64 a) {
  
-int tmp9 = OPTION_CAST(int)( ((int)( res ) )); return opt_ok(&tmp9, sizeof(int)) ;
+return  cbrt ( a ) ;
  
  }
- Option_int net__Socket_bind(net__Socket s, int port) {
-  
- struct /*c struct init*/ 
-
-sockaddr_in addr ;
+ int math__ceil(f64 a) {
  
- addr .sin_family  =  s .family ;
+return  ceil ( a ) ;
  
- addr .sin_port  =  htons ( port ) ;
+ }
+ f64 math__cos(f64 a) {
  
- addr .sin_addr .s_addr  =  htonl ( INADDR_ANY ) ;
+return  cos ( a ) ;
  
-int size= 16 ;
+ }
+ f64 math__cosh(f64 a) {
  
-int res= ((int)( bind ( s .sockfd ,  & /*v*/  addr ,  size ) ) ) ;
+return  cosh ( a ) ;
  
- if ( res < 0 ) {
+ }
+ f64 math__degrees(f64 radians) {
  
-return  v_error ( tos2((byte*)"socket: bind failed") ) ;
+return  radians * ( 180.0 / math__Pi ) ;
+ 
+ }
+ f64 math__exp(f64 a) {
+ 
+return  exp ( a ) ;
+ 
+ }
+ array_int math__digits(int _n, int base) {
+ 
+int n= _n ;
+ 
+int sign= 1 ;
+ 
+ if ( n < 0 ) {
+ 
+ sign  =  - 1 ;
+ 
+ n  =  - n ;
  
  }
  ;
  
-int tmp13 = OPTION_CAST(int)( res); return opt_ok(&tmp13, sizeof(int)) ;
+array_int res=new_array_from_c_array(0, 0, sizeof(int), (int[]) {   0 }) ;
  
- }
- Option_int net__Socket_listen(net__Socket s) {
+ while ( n != 0 ) {
  
-int backlog= 128 ;
  
-int res= ((int)( listen ( s .sockfd ,  backlog ) ) ) ;
+_PUSH(& res , ( /*typ = array_int   tmp_typ=int*/ ( n % base ) * sign ), tmp4, int) ;
  
- if ( res < 0 ) {
- 
-return  v_error ( tos2((byte*)"socket: listen failed") ) ;
- 
- }
- ;
- 
- #ifdef VDEBUG
- 
-printf( "listen res = %d\n", res ) ;
- 
- #endif
- ;
- 
-int tmp16 = OPTION_CAST(int)( res); return opt_ok(&tmp16, sizeof(int)) ;
- 
- }
- Option_int net__Socket_listen_backlog(net__Socket s, int backlog) {
- 
-int n= 0 ;
- 
- if ( backlog > 0 ) {
- 
- n  =  backlog ;
- 
- }
- ;
- 
-void* res= listen ( s .sockfd ,  n ) ;
- 
- if ( res < 0 ) {
- 
-return  v_error ( tos2((byte*)"socket: listen_backlog failed") ) ;
- 
- }
- ;
- 
-int tmp19 = OPTION_CAST(int)( ((int)( res ) )); return opt_ok(&tmp19, sizeof(int)) ;
- 
- }
- Option_net__Socket net__listen(int port) {
- 
- #ifdef VDEBUG
- 
-printf( "net.listen(%d)\n", port ) ;
- 
- #endif
- ;
- 
-Option_net__Socket tmp20 =  net__socket ( AF_INET , SOCK_STREAM , 0 ) ;
- if (!tmp20 .ok) {
- string err = tmp20 . error;
- 
-return  v_error ( err ) ;
- 
- }
- net__Socket s = *(net__Socket*) tmp20 . data;
- ;
- 
-Option_int tmp21 =  net__Socket_bind( s , port ) ;
- if (!tmp21 .ok) {
- string err = tmp21 . error;
- 
-return  v_error ( err ) ;
- 
- }
- int bind_res = *(int*) tmp21 . data;
- ;
- 
-Option_int tmp22 =  net__Socket_listen( s ) ;
- if (!tmp22 .ok) {
- string err = tmp22 . error;
- 
-return  v_error ( err ) ;
- 
- }
- int listen_res = *(int*) tmp22 . data;
- ;
- 
-net__Socket tmp23 = OPTION_CAST(net__Socket)( s); return opt_ok(&tmp23, sizeof(net__Socket)) ;
- 
- }
- Option_net__Socket net__Socket_accept(net__Socket s) {
- 
- #ifdef VDEBUG
- 
- println ( tos2((byte*)"accept()") ) ;
- 
- #endif
- ;
-  
- struct /*c struct init*/ 
-
-sockaddr_storage addr ;
- 
-int size= 128 ;
- 
-void* sockfd= accept ( s .sockfd ,  & /*v*/  addr ,  & /*v*/  size ) ;
- 
- if ( sockfd < 0 ) {
- 
-return  v_error ( tos2((byte*)"socket: accept failed") ) ;
- 
- }
- ;
- 
-net__Socket c= (net__Socket) { .sockfd =  sockfd , .family =  s .family , ._type =  s ._type , .proto =  s .proto } ;
- 
-net__Socket tmp28 = OPTION_CAST(net__Socket)( c); return opt_ok(&tmp28, sizeof(net__Socket)) ;
- 
- }
- Option_int net__Socket_connect(net__Socket s, string address, int port) {
-  
- struct /*c struct init*/ 
-
-addrinfo hints ;
- 
- hints .ai_family  =  AF_UNSPEC ;
- 
- hints .ai_socktype  =  SOCK_STREAM ;
- 
- hints .ai_flags  =  AI_PASSIVE ;
- 
- hints .ai_addrlen  =  0 ;
- 
- hints .ai_canonname  =  NULL ;
- 
- hints .ai_addr  =  NULL ;
-  
- struct /*c struct init*/ 
-
-addrinfo* info= 0 ;
- 
-string sport= _STR("%d", port) ;
- 
-void* info_res= getaddrinfo ((char*) address .str , (char*) sport .str ,  & /*v*/  hints ,  & /*v*/  info ) ;
- 
- if ( info_res != 0 ) {
- 
-return  v_error ( tos2((byte*)"socket: connect failed") ) ;
- 
- }
- ;
- 
-int res= ((int)( connect ( s .sockfd ,  info ->ai_addr ,  info ->ai_addrlen ) ) ) ;
- 
- if ( res < 0 ) {
- 
-return  v_error ( tos2((byte*)"socket: connect failed") ) ;
- 
- }
- ;
- 
-int tmp34 = OPTION_CAST(int)( ((int)( res ) )); return opt_ok(&tmp34, sizeof(int)) ;
- 
- }
- Option_net__Socket net__dial(string address, int port) {
- 
-Option_net__Socket tmp35 =  net__socket ( AF_INET , SOCK_STREAM , 0 ) ;
- if (!tmp35 .ok) {
- string err = tmp35 . error;
- 
-return  v_error ( err ) ;
- 
- }
- net__Socket s = *(net__Socket*) tmp35 . data;
- ;
- 
-Option_int tmp36 =  net__Socket_connect( s , address , port ) ;
- if (!tmp36 .ok) {
- string err = tmp36 . error;
- 
-return  v_error ( err ) ;
- 
- }
- int res = *(int*) tmp36 . data;
- ;
- 
-net__Socket tmp37 = OPTION_CAST(net__Socket)( s); return opt_ok(&tmp37, sizeof(net__Socket)) ;
- 
- }
- int net__Socket_send(net__Socket s, byte* buf, int len) {
- 
-void* res= send ( s .sockfd , (char*) buf ,  len ,  0 ) ;
- 
-return  res ;
- 
- }
- byte* net__Socket_recv(net__Socket s, int bufsize) {
- 
-byte* buf= v_malloc ( bufsize ) ;
- 
-void* res= recv ( s .sockfd , (char*) buf ,  bufsize ,  0 ) ;
- 
-return  buf ;
- 
- }
- int net__Socket_cread(net__Socket s, byte* buffer, int buffersize) {
- 
-return  ((int)( read ( s .sockfd , (char*) buffer ,  buffersize ) ) ) ;
- 
- }
- int net__Socket_crecv(net__Socket s, byte* buffer, int buffersize) {
- 
-return  ((int)( recv ( s .sockfd , (char*) buffer ,  buffersize ,  0 ) ) ) ;
- 
- }
- Option_int net__Socket_close(net__Socket s) {
- 
-int shutdown_res= 0 ;
- 
- #ifdef _WIN32
- 
- shutdown_res  =  shutdown ( s .sockfd ,  SD_BOTH ) ;
- 
- #else
- 
- shutdown_res  =  shutdown ( s .sockfd ,  SHUT_RDWR ) ;
- 
- #endif
- ;
- 
-int res= 0 ;
- 
- #ifdef _WIN32
- 
- res  =  closesocket ( s .sockfd ) ;
- 
- #else
- 
- res  =  close ( s .sockfd ) ;
- 
- #endif
- ;
- 
- if ( res < 0 ) {
- 
-return  v_error ( tos2((byte*)"socket: close failed") ) ;
- 
- }
- ;
- 
-int tmp43 = OPTION_CAST(int)( 0); return opt_ok(&tmp43, sizeof(int)) ;
- 
- }
- void net__Socket_write(net__Socket s, string str) {
- 
-string line= _STR("%.*s\r\n", str.len, str.str) ;
- 
- send ( s .sockfd , (char*) line .str ,  line .len ,  0 ) ;
- 
- }
- string net__Socket_read_line(net__Socket s) {
- 
-string res= tos2((byte*)"") ;
- 
- while (1) { 
- 
- #ifdef VDEBUG
- 
- println ( tos2((byte*)".") ) ;
- 
- #endif
- ;
- 
-byte* buf= v_malloc ( net__MAX_READ ) ;
- 
-int n= ((int)( recv ( s .sockfd , (char*) buf ,  net__MAX_READ - 1 ,  0 ) ) ) ;
- 
- #ifdef VDEBUG
- 
-printf( "numbytes=%d\n", n ) ;
- 
- #endif
- ;
- 
- if ( n == - 1 ) {
- 
- #ifdef VDEBUG
- 
- println ( tos2((byte*)"recv failed") ) ;
- 
- #endif
- ;
- 
-return  tos2((byte*)"") ;
- 
- }
- ;
- 
- if ( n == 0 ) {
- 
- break
- ;
- 
- }
- ;
- 
- buf [/*ptr*/ n ]/*rbyte 1*/  =  '\0' ;
- 
-string line= (tos2((byte *) buf ) ) ;
- 
- res = string_add(res,  line ) ;
- 
- if ( string_ends_with( line , tos2((byte*)"\n") )  ||  n < net__MAX_READ - 1 ) {
- 
- break
- ;
- 
- }
- ;
- 
- if ( string_ends_with( line , tos2((byte*)"\r\n") ) ) {
- 
- break
- ;
- 
- }
- ;
+ n  /=  base ;
  
  }
  ;
@@ -3849,17 +3848,194 @@ string line= (tos2((byte *) buf ) ) ;
 return  res ;
  
  }
- int net__Socket_get_port(net__Socket s) {
-  
- struct /*c struct init*/ 
-
-sockaddr_in addr ;
+ f64 math__erf(f64 a) {
  
-int size= 16 ;
+return  erf ( a ) ;
  
-void* sockname_res= getsockname ( s .sockfd ,  & /*v*/  addr ,  & /*v*/  size ) ;
+ }
+ f64 math__erfc(f64 a) {
  
-return  ((int)( ntohs ( addr .sin_port ) ) ) ;
+return  erfc ( a ) ;
+ 
+ }
+ f64 math__exp2(f64 a) {
+ 
+return  exp2 ( a ) ;
+ 
+ }
+ f64 math__floor(f64 a) {
+ 
+return  floor ( a ) ;
+ 
+ }
+ f64 math__fmod(f64 a, f64 b) {
+ 
+return  fmod ( a ,  b ) ;
+ 
+ }
+ f64 math__gamma(f64 a) {
+ 
+return  tgamma ( a ) ;
+ 
+ }
+ i64 math__gcd(i64 a_, i64 b_) {
+ 
+i64 a= a_ ;
+ 
+i64 b= b_ ;
+ 
+ if ( a < 0 ) {
+ 
+ a  =  - a ;
+ 
+ }
+ ;
+ 
+ if ( b < 0 ) {
+ 
+ b  =  - b ;
+ 
+ }
+ ;
+ 
+ while ( b != 0 ) {
+ 
+ 
+ a  %=  b ;
+ 
+ if ( a == 0 ) {
+ 
+return  b ;
+ 
+ }
+ ;
+ 
+ b  %=  a ;
+ 
+ }
+ ;
+ 
+return  a ;
+ 
+ }
+ f64 math__hypot(f64 a, f64 b) {
+ 
+return  hypot ( a ,  b ) ;
+ 
+ }
+ i64 math__lcm(i64 a, i64 b) {
+ 
+ if ( a == 0 ) {
+ 
+return  a ;
+ 
+ }
+ ;
+ 
+i64 res= a * ( b / math__gcd ( b , a ) ) ;
+ 
+ if ( res < 0 ) {
+ 
+return  - res ;
+ 
+ }
+ ;
+ 
+return  res ;
+ 
+ }
+ f64 math__log(f64 a) {
+ 
+return  log ( a ) ;
+ 
+ }
+ f64 math__log2(f64 a) {
+ 
+return  log2 ( a ) ;
+ 
+ }
+ f64 math__log10(f64 a) {
+ 
+return  log10 ( a ) ;
+ 
+ }
+ f64 math__log_gamma(f64 a) {
+ 
+return  lgamma ( a ) ;
+ 
+ }
+ f64 math__log_n(f64 a, f64 b) {
+ 
+return  log ( a ) / log ( b ) ;
+ 
+ }
+ f64 math__max(f64 a, f64 b) {
+ 
+ if ( a > b ) {
+ 
+return  a ;
+ 
+ }
+ ;
+ 
+return  b ;
+ 
+ }
+ f64 math__min(f64 a, f64 b) {
+ 
+ if ( a < b ) {
+ 
+return  a ;
+ 
+ }
+ ;
+ 
+return  b ;
+ 
+ }
+ f64 math__pow(f64 a, f64 b) {
+ 
+return  pow ( a ,  b ) ;
+ 
+ }
+ f64 math__radians(f64 degrees) {
+ 
+return  degrees * ( math__Pi / 180.0 ) ;
+ 
+ }
+ f64 math__round(f64 f) {
+ 
+return  round ( f ) ;
+ 
+ }
+ f64 math__sin(f64 a) {
+ 
+return  sin ( a ) ;
+ 
+ }
+ f64 math__sinh(f64 a) {
+ 
+return  sinh ( a ) ;
+ 
+ }
+ f64 math__sqrt(f64 a) {
+ 
+return  sqrt ( a ) ;
+ 
+ }
+ f64 math__tan(f64 a) {
+ 
+return  tan ( a ) ;
+ 
+ }
+ f64 math__tanh(f64 a) {
+ 
+return  tanh ( a ) ;
+ 
+ }
+ f64 math__trunc(f64 a) {
+ 
+return  trunc ( a ) ;
  
  }
  array_string os__parse_windows_cmd_line(byte* cmd) {
@@ -4008,7 +4184,7 @@ int len= vstrlen ( buf ) ;
  }
  ;
  
-_PUSH(& res , ( tos_clone ( buf ) ), tmp15, string) ;
+_PUSH(& res , ( /*typ = array_string   tmp_typ=string*/ tos_clone ( buf ) ), tmp15, string) ;
  
  buf_index  =  0 ;
  
@@ -4031,7 +4207,7 @@ array_ustring ulines=new_array_from_c_array(0, 0, sizeof(ustring), (ustring[]) {
  string myline = ((string *) tmp18 . data)[tmp19];
  
  
-_PUSH(& ulines , ( string_ustring( myline ) ), tmp20, ustring) ;
+_PUSH(& ulines , ( /*typ = array_ustring   tmp_typ=ustring*/ string_ustring( myline ) ), tmp20, ustring) ;
  
  }
  ;
@@ -4465,11 +4641,11 @@ return  string_trim_right( str , tos2((byte*)"\n") ) ;
  
  #ifdef _WIN32
  
-int maxlinechars= 256 ;
+int max_line_chars= 256 ;
  
-byte* buf= ((byte*)( v_malloc ( maxlinechars * 2 ) ) ) ;
+byte* buf= ((byte*)( v_malloc ( max_line_chars * 2 ) ) ) ;
  
-int res= ((int)( fgetws ((char*) buf ,  maxlinechars ,  stdin ) ) ) ;
+int res= ((int)( fgetws ((char*) buf ,  max_line_chars ,  stdin ) ) ) ;
  
 int len= ((int)( wcslen ( ((u16*)( buf ) ) ) ) ) ;
  
@@ -4523,7 +4699,7 @@ array_string inputstr=new_array_from_c_array(0, 0, sizeof(string), (string[]) { 
  
  line  =  string_trim_space( line ) ;
  
-_PUSH(& inputstr , ( line ), tmp65, string) ;
+_PUSH(& inputstr , ( /*typ = array_string   tmp_typ=string*/ line ), tmp65, string) ;
  
  }
  ;
@@ -4620,6 +4796,13 @@ return  tos2((byte*)"windows") ;
  #ifdef __BIONIC__
  
 return  tos2((byte*)"android") ;
+ 
+ #endif
+ ;
+ 
+ #ifdef __sun
+ 
+return  tos2((byte*)"solaris") ;
  
  #endif
  ;
@@ -4791,6 +4974,11 @@ return  ( *(string*) array__get( os__args , 0) ) ;
  #endif
  ;
  
+ #ifdef __sun
+ 
+ #endif
+ ;
+ 
  #ifdef __NetBSD__
  
 byte* result= v_malloc ( os__MAX_PATH ) ;
@@ -4827,7 +5015,7 @@ return  (tos((byte *) result ,  count ) ) ;
  #endif
  ;
  
-return  tos2((byte*)".") ;
+return  ( *(string*) array__get( os__args , 0) ) ;
  
  }
  bool os__is_dir(string path) {
@@ -4945,9 +5133,9 @@ array_string files= os__ls ( path ) ;
  
 array_string res=new_array_from_c_array(0, 0, sizeof(string), (string[]) {   0 }) ;
  
- array_string tmp98 =  files;
- for (int i = 0; i < tmp98.len; i++) {
- string file = ((string *) tmp98 . data)[i];
+ array_string tmp100 =  files;
+ for (int i = 0; i < tmp100.len; i++) {
+ string file = ((string *) tmp100 . data)[i];
  
  
  if ( string_starts_with( file , tos2((byte*)".") ) ) {
@@ -4962,12 +5150,12 @@ string p=string_add(string_add( path , os__PathSeparator ) , file ) ;
  
  if ( os__is_dir ( p ) ) {
  
-_PUSH_MANY(& res , ( os__walk_ext ( p , ext ) ), tmp100, array_string) ;
+_PUSH_MANY(& res , ( /*typ = array_string   tmp_typ=string*/ os__walk_ext ( p , ext ) ), tmp102, array_string) ;
  
  }
   else  if ( string_ends_with( file , ext ) ) {
  
-_PUSH(& res , ( p ), tmp101, string) ;
+_PUSH(& res , ( /*typ = array_string   tmp_typ=string*/ p ), tmp103, string) ;
  
  }
  ;
@@ -5024,6 +5212,8 @@ return  attr .st_mtime ;
  }
  void os__log(string s) {
  
+ println (string_add( tos2((byte*)"os.log: ") , s ) ) ;
+ 
  }
  void os__flush_stdout() {
  
@@ -5041,7 +5231,7 @@ array_string args=new_array_from_c_array(0, 0, sizeof(string), (string[]) {   0 
 int i= 0  ;  i < argc  ;  i ++ ) { 
  
  
-_PUSH(& args , ( (tos2((byte *) argv [/*ptr*/ i ]/*rbyteptr 0*/ ) ) ), tmp3, string) ;
+_PUSH(& args , ( /*typ = array_string   tmp_typ=string*/ (tos2((byte *) argv [/*ptr*/ i ]/*rbyteptr 0*/ ) ) ), tmp3, string) ;
  
  }
  ;
@@ -5100,7 +5290,7 @@ string name= tos_clone ( ((byteptr)( ent ->d_name ) ) ) ;
  
  if (string_ne( name , tos2((byte*)".") )  && string_ne( name , tos2((byte*)"..") )  && string_ne( name , tos2((byte*)"") ) ) {
  
-_PUSH(& res , ( name ), tmp9, string) ;
+_PUSH(& res , ( /*typ = array_string   tmp_typ=string*/ name ), tmp9, string) ;
  
  }
  ;
@@ -5132,6 +5322,461 @@ return  res ;
  void os__mkdir(string path) {
  
  mkdir ((char*) path .str ,  511 ) ;
+ 
+ }
+ Option_string net__hostname() {
+ 
+byte name  [256 ] ;
+ 
+void* res= gethostname ( & /*v*/  name ,  256 ) ;
+ 
+ if ( res != 0 ) {
+ 
+return  v_error ( tos2((byte*)"net.hostname() cannot get the host name") ) ;
+ 
+ }
+ ;
+ 
+string tmp3 = OPTION_CAST(string)( tos_clone ( name )); return opt_ok(&tmp3, sizeof(string)) ;
+ 
+ }
+ Option_net__Socket net__socket(int family, int _type, int proto) {
+ 
+ #ifdef _WIN32
+  
+ struct /*c struct init*/ 
+
+WSAData wsadata ;
+ 
+void* res= WSAStartup ( net__WSA_V22 ,  & /*v*/  wsadata ) ;
+ 
+ if ( res != 0 ) {
+ 
+return  v_error ( tos2((byte*)"socket: WSAStartup failed") ) ;
+ 
+ }
+ ;
+ 
+ #endif
+ ;
+ 
+void* sockfd= socket ( family ,  _type ,  proto ) ;
+ 
+int one= 1 ;
+ 
+ setsockopt ( sockfd ,  SOL_SOCKET ,  SO_REUSEADDR ,  & /*v*/  one ,  sizeof( int) ) ;
+ 
+ if ( sockfd == 0 ) {
+ 
+return  v_error ( tos2((byte*)"socket: init failed") ) ;
+ 
+ }
+ ;
+ 
+net__Socket s= (net__Socket) { .sockfd =  sockfd , .family =  family , ._type =  _type , .proto =  proto } ;
+ 
+net__Socket tmp6 = OPTION_CAST(net__Socket)( s); return opt_ok(&tmp6, sizeof(net__Socket)) ;
+ 
+ }
+ Option_net__Socket net__socket_udp() {
+ 
+Option_net__Socket tmp7 = OPTION_CAST(Option_net__Socket)( net__socket ( AF_INET , SOCK_DGRAM , IPPROTO_UDP )); return opt_ok(&tmp7, sizeof(net__Socket)) ;
+ 
+ }
+ Option_int net__Socket_setsockopt(net__Socket s, int level, int optname, int* optvalue) {
+ 
+void* res= setsockopt ( s .sockfd ,  level ,  optname ,  optvalue ,   ( optvalue ) ) ;
+ 
+ if ( res < 0 ) {
+ 
+return  v_error ( tos2((byte*)"socket: setsockopt failed") ) ;
+ 
+ }
+ ;
+ 
+int tmp9 = OPTION_CAST(int)( ((int)( res ) )); return opt_ok(&tmp9, sizeof(int)) ;
+ 
+ }
+ Option_int net__Socket_bind(net__Socket s, int port) {
+  
+ struct /*c struct init*/ 
+
+sockaddr_in addr ;
+ 
+ addr .sin_family  =  s .family ;
+ 
+ addr .sin_port  =  htons ( port ) ;
+ 
+ addr .sin_addr .s_addr  =  htonl ( INADDR_ANY ) ;
+ 
+int size= 16 ;
+ 
+int res= ((int)( bind ( s .sockfd ,  & /*v*/  addr ,  size ) ) ) ;
+ 
+ if ( res < 0 ) {
+ 
+return  v_error ( tos2((byte*)"socket: bind failed") ) ;
+ 
+ }
+ ;
+ 
+int tmp13 = OPTION_CAST(int)( res); return opt_ok(&tmp13, sizeof(int)) ;
+ 
+ }
+ Option_int net__Socket_listen(net__Socket s) {
+ 
+int backlog= 128 ;
+ 
+int res= ((int)( listen ( s .sockfd ,  backlog ) ) ) ;
+ 
+ if ( res < 0 ) {
+ 
+return  v_error ( tos2((byte*)"socket: listen failed") ) ;
+ 
+ }
+ ;
+ 
+ #ifdef VDEBUG
+ 
+printf( "listen res = %d\n", res ) ;
+ 
+ #endif
+ ;
+ 
+int tmp16 = OPTION_CAST(int)( res); return opt_ok(&tmp16, sizeof(int)) ;
+ 
+ }
+ Option_int net__Socket_listen_backlog(net__Socket s, int backlog) {
+ 
+int n= 0 ;
+ 
+ if ( backlog > 0 ) {
+ 
+ n  =  backlog ;
+ 
+ }
+ ;
+ 
+void* res= listen ( s .sockfd ,  n ) ;
+ 
+ if ( res < 0 ) {
+ 
+return  v_error ( tos2((byte*)"socket: listen_backlog failed") ) ;
+ 
+ }
+ ;
+ 
+int tmp19 = OPTION_CAST(int)( ((int)( res ) )); return opt_ok(&tmp19, sizeof(int)) ;
+ 
+ }
+ Option_net__Socket net__listen(int port) {
+ 
+ #ifdef VDEBUG
+ 
+printf( "net.listen(%d)\n", port ) ;
+ 
+ #endif
+ ;
+ 
+Option_net__Socket tmp20 =  net__socket ( AF_INET , SOCK_STREAM , 0 ) ;
+ if (!tmp20 .ok) {
+ string err = tmp20 . error;
+ 
+return  v_error ( err ) ;
+ 
+ }
+ net__Socket s = *(net__Socket*) tmp20 . data;
+ ;
+ 
+Option_int tmp21 =  net__Socket_bind( s , port ) ;
+ if (!tmp21 .ok) {
+ string err = tmp21 . error;
+ 
+return  v_error ( err ) ;
+ 
+ }
+ int bind_res = *(int*) tmp21 . data;
+ ;
+ 
+Option_int tmp22 =  net__Socket_listen( s ) ;
+ if (!tmp22 .ok) {
+ string err = tmp22 . error;
+ 
+return  v_error ( err ) ;
+ 
+ }
+ int listen_res = *(int*) tmp22 . data;
+ ;
+ 
+net__Socket tmp23 = OPTION_CAST(net__Socket)( s); return opt_ok(&tmp23, sizeof(net__Socket)) ;
+ 
+ }
+ Option_net__Socket net__Socket_accept(net__Socket s) {
+ 
+ #ifdef VDEBUG
+ 
+ println ( tos2((byte*)"accept()") ) ;
+ 
+ #endif
+ ;
+  
+ struct /*c struct init*/ 
+
+sockaddr_storage addr ;
+ 
+int size= 128 ;
+ 
+void* sockfd= accept ( s .sockfd ,  & /*v*/  addr ,  & /*v*/  size ) ;
+ 
+ if ( sockfd < 0 ) {
+ 
+return  v_error ( tos2((byte*)"socket: accept failed") ) ;
+ 
+ }
+ ;
+ 
+net__Socket c= (net__Socket) { .sockfd =  sockfd , .family =  s .family , ._type =  s ._type , .proto =  s .proto } ;
+ 
+net__Socket tmp28 = OPTION_CAST(net__Socket)( c); return opt_ok(&tmp28, sizeof(net__Socket)) ;
+ 
+ }
+ Option_int net__Socket_connect(net__Socket s, string address, int port) {
+  
+ struct /*c struct init*/ 
+
+addrinfo hints ;
+ 
+ hints .ai_family  =  AF_UNSPEC ;
+ 
+ hints .ai_socktype  =  SOCK_STREAM ;
+ 
+ hints .ai_flags  =  AI_PASSIVE ;
+ 
+ hints .ai_protocol  =  0 ;
+ 
+ hints .ai_addrlen  =  0 ;
+ 
+ hints .ai_canonname  =  NULL ;
+ 
+ hints .ai_addr  =  NULL ;
+ 
+ hints .ai_next  =  NULL ;
+  
+ struct /*c struct init*/ 
+
+addrinfo* info= 0 ;
+ 
+string sport= _STR("%d", port) ;
+ 
+void* info_res= getaddrinfo ((char*) address .str , (char*) sport .str ,  & /*v*/  hints ,  & /*v*/  info ) ;
+ 
+ if ( info_res != 0 ) {
+ 
+return  v_error ( tos2((byte*)"socket: connect failed") ) ;
+ 
+ }
+ ;
+ 
+int res= ((int)( connect ( s .sockfd ,  info ->ai_addr ,  info ->ai_addrlen ) ) ) ;
+ 
+ if ( res < 0 ) {
+ 
+return  v_error ( tos2((byte*)"socket: connect failed") ) ;
+ 
+ }
+ ;
+ 
+int tmp34 = OPTION_CAST(int)( ((int)( res ) )); return opt_ok(&tmp34, sizeof(int)) ;
+ 
+ }
+ Option_net__Socket net__dial(string address, int port) {
+ 
+Option_net__Socket tmp35 =  net__socket ( AF_INET , SOCK_STREAM , 0 ) ;
+ if (!tmp35 .ok) {
+ string err = tmp35 . error;
+ 
+return  v_error ( err ) ;
+ 
+ }
+ net__Socket s = *(net__Socket*) tmp35 . data;
+ ;
+ 
+Option_int tmp36 =  net__Socket_connect( s , address , port ) ;
+ if (!tmp36 .ok) {
+ string err = tmp36 . error;
+ 
+return  v_error ( err ) ;
+ 
+ }
+ int res = *(int*) tmp36 . data;
+ ;
+ 
+net__Socket tmp37 = OPTION_CAST(net__Socket)( s); return opt_ok(&tmp37, sizeof(net__Socket)) ;
+ 
+ }
+ Option_int net__Socket_send(net__Socket s, byte* buf, int len) {
+ 
+int res= ((int)( send ( s .sockfd , (char*) buf ,  len ,  0 ) ) ) ;
+ 
+ if ( res < 0 ) {
+ 
+return  v_error ( tos2((byte*)"socket: send failed") ) ;
+ 
+ }
+ ;
+ 
+int tmp39 = OPTION_CAST(int)( res); return opt_ok(&tmp39, sizeof(int)) ;
+ 
+ }
+ _V_MulRet_byte_PTR__V_int net__Socket_recv(net__Socket s, int bufsize) {
+ 
+byte* buf= v_malloc ( bufsize ) ;
+ 
+int res= ((int)( recv ( s .sockfd , (char*) buf ,  bufsize ,  0 ) ) ) ;
+ 
+return (_V_MulRet_byte_PTR__V_int){.var_0=buf,.var_1=res} ;
+ 
+ }
+ int net__Socket_cread(net__Socket s, byte* buffer, int buffersize) {
+ 
+return  ((int)( read ( s .sockfd , (char*) buffer ,  buffersize ) ) ) ;
+ 
+ }
+ int net__Socket_crecv(net__Socket s, byte* buffer, int buffersize) {
+ 
+return  ((int)( recv ( s .sockfd , (char*) buffer ,  buffersize ,  0 ) ) ) ;
+ 
+ }
+ Option_int net__Socket_close(net__Socket s) {
+ 
+int shutdown_res= 0 ;
+ 
+ #ifdef _WIN32
+ 
+ shutdown_res  =  shutdown ( s .sockfd ,  SD_BOTH ) ;
+ 
+ #else
+ 
+ shutdown_res  =  shutdown ( s .sockfd ,  SHUT_RDWR ) ;
+ 
+ #endif
+ ;
+ 
+int res= 0 ;
+ 
+ #ifdef _WIN32
+ 
+ res  =  closesocket ( s .sockfd ) ;
+ 
+ #else
+ 
+ res  =  close ( s .sockfd ) ;
+ 
+ #endif
+ ;
+ 
+ if ( res < 0 ) {
+ 
+return  v_error ( tos2((byte*)"socket: close failed") ) ;
+ 
+ }
+ ;
+ 
+int tmp44 = OPTION_CAST(int)( 0); return opt_ok(&tmp44, sizeof(int)) ;
+ 
+ }
+ void net__Socket_write(net__Socket s, string str) {
+ 
+string line= _STR("%.*s\r\n", str.len, str.str) ;
+ 
+ send ( s .sockfd , (char*) line .str ,  line .len ,  0 ) ;
+ 
+ }
+ string net__Socket_read_line(net__Socket s) {
+ 
+string res= tos2((byte*)"") ;
+ 
+ while (1) { 
+ 
+ #ifdef VDEBUG
+ 
+ println ( tos2((byte*)".") ) ;
+ 
+ #endif
+ ;
+ 
+byte* buf= v_malloc ( net__MAX_READ ) ;
+ 
+int n= ((int)( recv ( s .sockfd , (char*) buf ,  net__MAX_READ - 1 ,  0 ) ) ) ;
+ 
+ #ifdef VDEBUG
+ 
+printf( "numbytes=%d\n", n ) ;
+ 
+ #endif
+ ;
+ 
+ if ( n == - 1 ) {
+ 
+ #ifdef VDEBUG
+ 
+ println ( tos2((byte*)"recv failed") ) ;
+ 
+ #endif
+ ;
+ 
+return  tos2((byte*)"") ;
+ 
+ }
+ ;
+ 
+ if ( n == 0 ) {
+ 
+ break
+ ;
+ 
+ }
+ ;
+ 
+ buf [/*ptr*/ n ]/*rbyte 1*/  =  '\0' ;
+ 
+string line= (tos2((byte *) buf ) ) ;
+ 
+ res = string_add(res,  line ) ;
+ 
+ if ( string_ends_with( line , tos2((byte*)"\n") )  ||  n < net__MAX_READ - 1 ) {
+ 
+ break
+ ;
+ 
+ }
+ ;
+ 
+ if ( string_ends_with( line , tos2((byte*)"\r\n") ) ) {
+ 
+ break
+ ;
+ 
+ }
+ ;
+ 
+ }
+ ;
+ 
+return  res ;
+ 
+ }
+ int net__Socket_get_port(net__Socket s) {
+  
+ struct /*c struct init*/ 
+
+sockaddr_in addr ;
+ 
+int size= 16 ;
+ 
+void* sockname_res= getsockname ( s .sockfd ,  & /*v*/  addr ,  & /*v*/  size ) ;
+ 
+return  ((int)( ntohs ( addr .sin_port ) ) ) ;
  
  }
  string net_dot_urllib__error_msg(string message, string val) {
@@ -5762,7 +6407,7 @@ return  v_error ( net_dot_urllib__error_msg ( tos2((byte*)"first path segment in
  }
  ;
  
- if ( (string_ne( url .scheme , tos2((byte*)"") )  ||  ! via_request  &&  ! string_starts_with( rest , tos2((byte*)"///") ) )  &&  string_starts_with( rest , tos2((byte*)"//") ) ) {
+ if ( ( (string_ne( url .scheme , tos2((byte*)"") )  ||  ! via_request )  &&  ! string_starts_with( rest , tos2((byte*)"///") ) )  &&  string_starts_with( rest , tos2((byte*)"//") ) ) {
  
 array_string parts= net_dot_urllib__split ( string_right( rest , 2 ) , tos2((byte*)"/") , 0 ) ;
  
@@ -5794,8 +6439,7 @@ Option_bool tmp113 =  net_dot_urllib__URL_set_path(& /* ? */ url , rest ) ;
 return  v_error ( err ) ;
  
  }
- bool _ = *(bool*) tmp113 . data;
- ;
+ ; ;
  
 net_dot_urllib__URL tmp114 = OPTION_CAST(net_dot_urllib__URL)( url); return opt_ok(&tmp114, sizeof(net_dot_urllib__URL)) ;
  
@@ -6242,8 +6886,7 @@ Option_bool tmp166 =  net_dot_urllib___parse_query (& /*112 EXP:"net_dot_urllib_
 return  v_error ( err ) ;
  
  }
- bool _ = *(bool*) tmp166 . data;
- ;
+ ; ;
  
 net_dot_urllib__Values tmp167 = OPTION_CAST(net_dot_urllib__Values)( m); return opt_ok(&tmp167, sizeof(net_dot_urllib__Values)) ;
  
@@ -6252,7 +6895,7 @@ net_dot_urllib__Values tmp167 = OPTION_CAST(net_dot_urllib__Values)( m); return 
  
 net_dot_urllib__Values m= net_dot_urllib__new_values ( ) ;
  
-Option_bool _= net_dot_urllib___parse_query (& /*112 EXP:"net_dot_urllib__Values*" GOT:"net_dot_urllib__Values" */ m , query ) ;
+ net_dot_urllib___parse_query (& /*112 EXP:"net_dot_urllib__Values*" GOT:"net_dot_urllib__Values" */ m , query ) ; ;
  
 return  m ;
  
@@ -6367,10 +7010,9 @@ array_string keys=new_array_from_c_array(0, 0, sizeof(string), (string[]) {   0 
  array_string keys_tmp180 = map_keys(& tmp180 ); 
  for (int l = 0; l < keys_tmp180 .len; l++) {
  string k = ((string*)keys_tmp180 .data)[l];
- Value _ = {0}; map_get(tmp180, k, & _);
  
  
-_PUSH(& keys , ( k ), tmp181, string) ;
+_PUSH(& keys , ( /*typ = array_string   tmp_typ=string*/ k ), tmp181, string) ;
  
  }
  ;
@@ -6469,7 +7111,7 @@ array_string src= string_split( full , tos2((byte*)"/") ) ;
  }
  else  { // default:
  
-_PUSH(& dst , ( elem ), tmp196, string) ;
+_PUSH(& dst , ( /*typ = array_string   tmp_typ=string*/ elem ), tmp196, string) ;
  
  }
  ;
@@ -6481,7 +7123,7 @@ string last= ( *(string*) array__get( src , src .len - 1) ) ;
  
  if (string_eq( last , tos2((byte*)".") )  || string_eq( last , tos2((byte*)"..") ) ) {
  
-_PUSH(& dst , ( tos2((byte*)"") ), tmp200, string) ;
+_PUSH(& dst , ( /*typ = array_string   tmp_typ=string*/ tos2((byte*)"") ), tmp200, string) ;
  
  }
  ;
@@ -6850,7 +7492,7 @@ Value a= tmp12 ;
  }
  ;
  
-_PUSH(& a .data , ( value ), tmp15, string) ;
+_PUSH(& a .data , ( /*typ = array_string   tmp_typ=string*/ value ), tmp15, string) ;
  
 map__set(& v ->data , key , & (Value []) {  a }) ;
  
@@ -6864,42 +7506,11 @@ map__set(& v ->data , key , & (Value []) {  a }) ;
  v ->size  =  v ->data .size ;
  
  }
- void rand__seed(int s) {
- 
- srand ( s ) ;
- 
- }
- int rand__next(int max) {
- 
-return  rand ( ) % max ;
- 
- }
- int rand__rand_r(int* seed) {
- 
-int* rs= seed ;
- 
-int ns= ( * rs * 1103515245 + 12345 ) ;
- 
- * rs  =  ns ; 
- 
-return  ns & 0x7fffffff ;
- 
- }
- void http__init_module() {
- 
- #ifdef __APPLE__
+ int http__init() {
  
  SSL_library_init ( ) ;
  
- #endif
- ;
- 
- #ifdef __linux__
- 
- SSL_library_init ( ) ;
- 
- #endif
- ;
+return  1 ;
  
  }
  http__Response http__Request_ssl_do(http__Request* req, int port, string method, string host_name, string path) {
@@ -7036,22 +7647,7 @@ return  http__parse_response ( strings__Builder_str( sb ) ) ;
  }
  Option_http__Response http__get(string url) {
  
-Option_http__Request tmp1 =  http__new_request ( tos2((byte*)"GET") , url , tos2((byte*)"") ) ;
- if (!tmp1 .ok) {
- string err = tmp1 . error;
- 
-return  v_error ( err ) ;
- 
- }
- http__Request req = *(http__Request*) tmp1 . data;
- ;
- 
-Option_http__Response tmp2 = OPTION_CAST(Option_http__Response)( http__Request_do(& /* ? */ req )); return opt_ok(&tmp2, sizeof(http__Response)) ;
- 
- }
- Option_http__Response http__post(string url, string data) {
- 
-Option_http__Request tmp3 =  http__new_request ( tos2((byte*)"POST") , url , data ) ;
+Option_http__Request tmp3 =  http__new_request ( tos2((byte*)"GET") , url , tos2((byte*)"") ) ;
  if (!tmp3 .ok) {
  string err = tmp3 . error;
  
@@ -7062,6 +7658,21 @@ return  v_error ( err ) ;
  ;
  
 Option_http__Response tmp4 = OPTION_CAST(Option_http__Response)( http__Request_do(& /* ? */ req )); return opt_ok(&tmp4, sizeof(http__Response)) ;
+ 
+ }
+ Option_http__Response http__post(string url, string data) {
+ 
+Option_http__Request tmp5 =  http__new_request ( tos2((byte*)"POST") , url , data ) ;
+ if (!tmp5 .ok) {
+ string err = tmp5 . error;
+ 
+return  v_error ( err ) ;
+ 
+ }
+ http__Request req = *(http__Request*) tmp5 . data;
+ ;
+ 
+Option_http__Response tmp6 = OPTION_CAST(Option_http__Response)( http__Request_do(& /* ? */ req )); return opt_ok(&tmp6, sizeof(http__Response)) ;
  
  }
  Option_http__Request http__new_request(string typ, string _url, string _data) {
@@ -7086,19 +7697,19 @@ string data= _data ;
  }
  ;
  
-http__Request tmp7 = OPTION_CAST(http__Request)( (http__Request) { .typ =  typ , .url =  url , .data =  data , .ws_func =  0 , .user_ptr =  0 , .headers =  new_map(1, sizeof(string)) , .user_agent =  tos2((byte*)"v") , .method =  tos((byte *)"", 0) , .h =  tos((byte *)"", 0) , .cmd =  tos((byte *)"", 0) , .verbose =  0 , }); return opt_ok(&tmp7, sizeof(http__Request)) ;
+http__Request tmp9 = OPTION_CAST(http__Request)( (http__Request) { .typ =  typ , .url =  url , .data =  data , .ws_func =  0 , .user_ptr =  0 , .headers =  new_map(1, sizeof(string)) , .user_agent =  tos2((byte*)"v") , .method =  tos((byte *)"", 0) , .h =  tos((byte *)"", 0) , .cmd =  tos((byte *)"", 0) , .verbose =  0 , }); return opt_ok(&tmp9, sizeof(http__Request)) ;
  
  }
  string http__get_text(string url) {
  
-Option_http__Response tmp8 =  http__get ( url ) ;
- if (!tmp8 .ok) {
- string err = tmp8 . error;
+Option_http__Response tmp10 =  http__get ( url ) ;
+ if (!tmp10 .ok) {
+ string err = tmp10 . error;
  
 return  tos2((byte*)"") ;
  
  }
- http__Response resp = *(http__Response*) tmp8 . data;
+ http__Response resp = *(http__Response*) tmp10 . data;
  ;
  
 return  resp .text ;
@@ -7123,9 +7734,9 @@ map__set(& req ->headers , key , & (string []) {  val }) ;
  
 map_string headers= new_map(1, sizeof(string)) ;
  
- array_string tmp10 =  lines;
- for (int i = 0; i < tmp10.len; i++) {
- string line = ((string *) tmp10 . data)[i];
+ array_string tmp12 =  lines;
+ for (int i = 0; i < tmp12.len; i++) {
+ string line = ((string *) tmp12 . data)[i];
  
  
  if ( i == 0 ) {
@@ -7161,24 +7772,24 @@ return  headers ;
  }
  ;
  
- map_string tmp16 =  req ->headers;
- array_string keys_tmp16 = map_keys(& tmp16 ); 
- for (int l = 0; l < keys_tmp16 .len; l++) {
- string key = ((string*)keys_tmp16 .data)[l];
- string val = {0}; map_get(tmp16, key, & val);
+ map_string tmp18 =  req ->headers;
+ array_string keys_tmp18 = map_keys(& tmp18 ); 
+ for (int l = 0; l < keys_tmp18 .len; l++) {
+ string key = ((string*)keys_tmp18 .data)[l];
+ string val = {0}; map_get(tmp18, key, & val);
  
  
  }
  ;
  
-Option_net_dot_urllib__URL tmp17 =  net_dot_urllib__parse ( req ->url ) ;
- if (!tmp17 .ok) {
- string err = tmp17 . error;
+Option_net_dot_urllib__URL tmp19 =  net_dot_urllib__parse ( req ->url ) ;
+ if (!tmp19 .ok) {
+ string err = tmp19 . error;
  
 return  v_error ( _STR("http.request.do: invalid URL %.*s", req ->url.len, req ->url.str) ) ;
  
  }
- net_dot_urllib__URL url = *(net_dot_urllib__URL*) tmp17 . data;
+ net_dot_urllib__URL url = *(net_dot_urllib__URL*) tmp19 . data;
  ;
  
 net_dot_urllib__URL rurl= url ;
@@ -7196,14 +7807,14 @@ return  v_error ( _STR("http.request.do: maximum number of redirects reached (%d
  }
  ;
  
-Option_http__Response tmp21 =  http__Request_method_and_url_to_response(& /* ? */* req , req ->typ , rurl ) ;
- if (!tmp21 .ok) {
- string err = tmp21 . error;
+Option_http__Response tmp23 =  http__Request_method_and_url_to_response(& /* ? */* req , req ->typ , rurl ) ;
+ if (!tmp23 .ok) {
+ string err = tmp23 . error;
  
 return  v_error ( err ) ;
  
  }
- http__Response qresp = *(http__Response*) tmp21 . data;
+ http__Response qresp = *(http__Response*) tmp23 . data;
  ;
  
  resp  =  qresp ;
@@ -7216,20 +7827,20 @@ return  v_error ( err ) ;
  }
  ;
   
- string tmp22 = tos((byte *)"", 0); bool tmp23 = map_get( resp .headers , tos2((byte*)"Location"), & tmp22); 
+ string tmp24 = tos((byte *)"", 0); bool tmp25 = map_get( resp .headers , tos2((byte*)"Location"), & tmp24); 
  
- if (!tmp23) tmp22 = tos((byte *)"", 0); 
+ if (!tmp25) tmp24 = tos((byte *)"", 0); 
 
-string redirect_url= tmp22 ;
+string redirect_url= tmp24 ;
  
-Option_net_dot_urllib__URL tmp25 =  net_dot_urllib__parse ( redirect_url ) ;
- if (!tmp25 .ok) {
- string err = tmp25 . error;
+Option_net_dot_urllib__URL tmp27 =  net_dot_urllib__parse ( redirect_url ) ;
+ if (!tmp27 .ok) {
+ string err = tmp27 . error;
  
 return  v_error ( _STR("http.request.do: invalid URL in redirect %.*s", redirect_url.len, redirect_url.str) ) ;
  
  }
- net_dot_urllib__URL qrurl = *(net_dot_urllib__URL*) tmp25 . data;
+ net_dot_urllib__URL qrurl = *(net_dot_urllib__URL*) tmp27 . data;
  ;
  
  rurl  =  qrurl ;
@@ -7239,7 +7850,7 @@ return  v_error ( _STR("http.request.do: invalid URL in redirect %.*s", redirect
  }
  ;
  
-http__Response tmp26 = OPTION_CAST(http__Response)( resp); return opt_ok(&tmp26, sizeof(http__Response)) ;
+http__Response tmp28 = OPTION_CAST(http__Response)( resp); return opt_ok(&tmp28, sizeof(http__Response)) ;
  
  }
  Option_http__Response http__Request_method_and_url_to_response(http__Request* req, string method, net_dot_urllib__URL url) {
@@ -7275,12 +7886,12 @@ int nport= v_string_int( net_dot_urllib__URL_port(& /* ? */ url ) ) ;
  
  if (string_eq( scheme , tos2((byte*)"https") ) ) {
  
-http__Response tmp32 = OPTION_CAST(http__Response)( http__Request_ssl_do(& /* ? */* req , nport , method , host_name , path )); return opt_ok(&tmp32, sizeof(http__Response)) ;
+http__Response tmp34 = OPTION_CAST(http__Response)( http__Request_ssl_do(& /* ? */* req , nport , method , host_name , path )); return opt_ok(&tmp34, sizeof(http__Response)) ;
  
  }
   else  if (string_eq( scheme , tos2((byte*)"http") ) ) {
  
-Option_http__Response tmp33 = OPTION_CAST(Option_http__Response)( http__Request_http_do(& /* ? */* req , nport , method , host_name , path )); return opt_ok(&tmp33, sizeof(http__Response)) ;
+Option_http__Response tmp35 = OPTION_CAST(Option_http__Response)( http__Request_http_do(& /* ? */* req , nport , method , host_name , path )); return opt_ok(&tmp35, sizeof(http__Response)) ;
  
  }
  ;
@@ -7358,11 +7969,11 @@ map__set(& headers , key , & (string []) {  string_trim_space( val ) }) ;
  }
  ;
   
- string tmp46 = tos((byte *)"", 0); bool tmp47 = map_get( headers , tos2((byte*)"Transfer-Encoding"), & tmp46); 
+ string tmp48 = tos((byte *)"", 0); bool tmp49 = map_get( headers , tos2((byte*)"Transfer-Encoding"), & tmp48); 
  
- if (!tmp47) tmp46 = tos((byte *)"", 0); 
+ if (!tmp49) tmp48 = tos((byte *)"", 0); 
 
- if (string_eq( tmp46 , tos2((byte*)"chunked") ) ) {
+ if (string_eq( tmp48 , tos2((byte*)"chunked") ) ) {
  
  text  =  http_dot_chunked__decode ( text ) ;
  
@@ -7378,21 +7989,21 @@ string ua= req ->user_agent ;
  
 array_string uheaders=new_array_from_c_array(0, 0, sizeof(string), (string[]) {   0 }) ;
  
- map_string tmp50 =  req ->headers;
- array_string keys_tmp50 = map_keys(& tmp50 ); 
- for (int l = 0; l < keys_tmp50 .len; l++) {
- string key = ((string*)keys_tmp50 .data)[l];
- string val = {0}; map_get(tmp50, key, & val);
+ map_string tmp52 =  req ->headers;
+ array_string keys_tmp52 = map_keys(& tmp52 ); 
+ for (int l = 0; l < keys_tmp52 .len; l++) {
+ string key = ((string*)keys_tmp52 .data)[l];
+ string val = {0}; map_get(tmp52, key, & val);
  
  
-_PUSH(& uheaders , ( _STR("%.*s: %.*s\r\n", key.len, key.str, val.len, val.str) ), tmp51, string) ;
+_PUSH(& uheaders , ( /*typ = array_string   tmp_typ=string*/ _STR("%.*s: %.*s\r\n", key.len, key.str, val.len, val.str) ), tmp53, string) ;
  
  }
  ;
  
  if ( req ->data .len > 0 ) {
  
-_PUSH(& uheaders , ( _STR("Content-Length: %d\r\n", req ->data .len) ), tmp52, string) ;
+_PUSH(& uheaders , ( /*typ = array_string   tmp_typ=string*/ _STR("Content-Length: %d\r\n", req ->data .len) ), tmp54, string) ;
  
  }
  ;
@@ -7575,666 +8186,6 @@ int csize= http_dot_chunked__ChunkScanner_read_chunk_size(& /* ? */ cscanner ) ;
 return  strings__Builder_str( sb ) ;
  
  }
- void time__remove_me_when_c_bug_is_fixed() {
- 
- }
- time__Time time__now() {
- 
-i64 t= time ( 0 ) ;
-  
- struct /*c struct init*/ 
-
-tm* now= 0 ;
- 
- now  =  localtime ( & /*v*/  t ) ;
- 
-return  time__convert_ctime (* now ) ;
- 
- }
- time__Time time__random() {
- 
-int now_unix= time__now ( ) .uni ;
- 
-int rand_unix= rand__next ( now_unix ) ;
- 
-return  time__unix ( rand_unix ) ;
- 
- }
- time__Time time__unix(int abs) {
- 
-int d= abs / time__secondsPerDay ;
- 
-int n= d / time__daysPer400Years ;
- 
-int y= 400 * n ;
- 
- d  -=  time__daysPer400Years * n ;
- 
- n  =  d / time__daysPer100Years ;
- 
- n  -=  n  >>  2 ;
- 
- y  +=  100 * n ;
- 
- d  -=  time__daysPer100Years * n ;
- 
- n  =  d / time__daysPer4Years ;
- 
- y  +=  4 * n ;
- 
- d  -=  time__daysPer4Years * n ;
- 
- n  =  d / 365 ;
- 
- n  -=  n  >>  2 ;
- 
- y  +=  n ;
- 
- d  -=  365 * n ;
- 
-int yday= ((int)( d ) ) ;
- 
-int day= yday ;
- 
-int year= abs / ((int)( 3.154e+7 ) ) + 1970 ;
- 
-int hour= ((int)( abs % time__secondsPerDay ) ) / time__secondsPerHour ;
- 
-int minute= ((int)( abs % time__secondsPerHour ) ) / time__secondsPerMinute ;
- 
-int second= ((int)( abs % time__secondsPerMinute ) ) ;
- 
- if ( time__is_leap_year ( year ) ) {
- 
- if ( day > 31 + 29 - 1 ) {
- 
- day -- ;
- 
- }
-  else  if ( day == 31 + 29 - 1 ) {
- 
- day  =  29 ;
- 
-return  (time__Time) { .year =  year , .month =  2 , .day =  day , .hour =  hour , .minute =  minute , .second =  second , .uni =  0 } ;
- 
- }
- ;
- 
- }
- ;
- 
-int month= day / 31 ;
- 
-int begin= 0 ;
- 
-int end= ((int)( ( *(int*) array__get( time__daysBefore , month + 1) ) ) ) ;
- 
- if ( day >= end ) {
- 
- month ++ ;
- 
- begin  =  end ;
- 
- }
-  else { 
- 
- begin  =  ((int)( ( *(int*) array__get( time__daysBefore , month) ) ) ) ;
- 
- }
- ;
- 
- month ++ ;
- 
- day  =  day - begin + 1 ;
- 
-return  (time__Time) { .year =  year , .month =  month , .day =  day , .hour =  hour , .minute =  minute , .second =  second , .uni =  0 } ;
- 
- }
- time__Time time__convert_ctime(struct /*TM*/ tm t) {
- 
-return  (time__Time) { .year =  t .tm_year + 1900 , .month =  t .tm_mon + 1 , .day =  t .tm_mday , .hour =  t .tm_hour , .minute =  t .tm_min , .second =  t .tm_sec , .uni =  mktime ( & /*v*/  t ) } ;
- 
- }
- string time__Time_format_ss(time__Time t) {
- 
-return  _STR("%d-%02d-%02d %02d:%02d:%02d", t .year, t .month, t .day, t .hour, t .minute, t .second) ;
- 
- }
- string time__Time_format(time__Time t) {
- 
-return  _STR("%d-%02d-%02d %02d:%02d", t .year, t .month, t .day, t .hour, t .minute) ;
- 
- }
- string time__Time_smonth(time__Time t) {
- 
-int i= t .month - 1 ;
- 
-return  string_substr( time__Months , i * 3 , ( i + 1 ) * 3 ) ;
- 
- }
- string time__Time_hhmm(time__Time t) {
- 
-return  _STR("%02d:%02d", t .hour, t .minute) ;
- 
- }
- string time__Time_hhmm12(time__Time t) {
- 
-string am= tos2((byte*)"am") ;
- 
-int hour= t .hour ;
- 
- if ( t .hour > 11 ) {
- 
- am  =  tos2((byte*)"pm") ;
- 
- }
- ;
- 
- if ( t .hour > 12 ) {
- 
- hour  =  hour - 12 ;
- 
- }
- ;
- 
- if ( t .hour == 0 ) {
- 
- hour  =  12 ;
- 
- }
- ;
- 
-return  _STR("%d:%02d %.*s", hour, t .minute, am.len, am.str) ;
- 
- }
- string time__Time_hhmmss(time__Time t) {
- 
-return  _STR("%02d:%02d:%02d", t .hour, t .minute, t .second) ;
- 
- }
- string time__Time_ymmdd(time__Time t) {
- 
-return  _STR("%d-%02d-%02d", t .year, t .month, t .day) ;
- 
- }
- string time__Time_md(time__Time t) {
- 
-string s= _STR("%.*s %d", time__Time_smonth( t ).len, time__Time_smonth( t ).str, t .day) ;
- 
-return  s ;
- 
- }
- string time__Time_clean(time__Time t) {
- 
-time__Time nowe= time__now ( ) ;
- 
- if ( t .month == nowe .month  &&  t .year == nowe .year  &&  t .day == nowe .day ) {
- 
-return  time__Time_hhmm( t ) ;
- 
- }
- ;
- 
- if ( t .year == nowe .year ) {
- 
-return  _STR("%.*s %d %.*s", time__Time_smonth( t ).len, time__Time_smonth( t ).str, t .day, time__Time_hhmm( t ).len, time__Time_hhmm( t ).str) ;
- 
- }
- ;
- 
-return  time__Time_format( t ) ;
- 
- }
- string time__Time_clean12(time__Time t) {
- 
-time__Time nowe= time__now ( ) ;
- 
- if ( t .month == nowe .month  &&  t .year == nowe .year  &&  t .day == nowe .day ) {
- 
-return  time__Time_hhmm12( t ) ;
- 
- }
- ;
- 
- if ( t .year == nowe .year ) {
- 
-return  _STR("%.*s %d %.*s", time__Time_smonth( t ).len, time__Time_smonth( t ).str, t .day, time__Time_hhmm12( t ).len, time__Time_hhmm12( t ).str) ;
- 
- }
- ;
- 
-return  time__Time_format( t ) ;
- 
- }
- time__Time time__parse(string s) {
- 
-int pos= string_index( s , tos2((byte*)" ") ) ;
- 
- if ( pos <= 0 ) {
- 
- println ( tos2((byte*)"bad time format") ) ;
- 
-return  time__now ( ) ;
- 
- }
- ;
- 
-string symd= string_left( s , pos ) ;
- 
-array_string ymd= string_split( symd , tos2((byte*)"-") ) ;
- 
- if ( ymd .len != 3 ) {
- 
- println ( tos2((byte*)"bad time format") ) ;
- 
-return  time__now ( ) ;
- 
- }
- ;
- 
-string shms= string_right( s , pos ) ;
- 
-array_string hms= string_split( shms , tos2((byte*)":") ) ;
- 
-string hour= ( *(string*) array__get( hms , 0) ) ;
- 
-string minute= ( *(string*) array__get( hms , 1) ) ;
- 
-string second= ( *(string*) array__get( hms , 2) ) ;
- 
-return  time__new_time ( (time__Time) { .year =  v_string_int( ( *(string*) array__get( ymd , 0) ) ) , .month =  v_string_int( ( *(string*) array__get( ymd , 1) ) ) , .day =  v_string_int( ( *(string*) array__get( ymd , 2) ) ) , .hour =  v_string_int( hour ) , .minute =  v_string_int( minute ) , .second =  v_string_int( second ) , .uni =  0 } ) ;
- 
- }
- time__Time time__new_time(time__Time t) {
- 
-return  (time__Time){ .uni =  time__Time_calc_unix(& /* ? */ t ) , .year = t . year, .month = t . month, .day = t . day, .hour = t . hour, .minute = t . minute, .second = t . second, } ;
- 
- }
- int time__Time_calc_unix(time__Time* t) {
- 
- if ( t ->uni != 0 ) {
- 
-return  t ->uni ;
- 
- }
- ;
-
-struct /*TM*/ tm tt= (struct tm) { .tm_sec =  t ->second , .tm_min =  t ->minute , .tm_hour =  t ->hour , .tm_mday =  t ->day , .tm_mon =  t ->month - 1 , .tm_year =  t ->year - 1900 } ;
- 
-return  mktime ( & /*v*/  tt ) ;
- 
- }
- time__Time time__Time_add_seconds(time__Time t, int seconds) {
- 
-return  time__unix ( t .uni + seconds ) ;
- 
- }
- int time__since(time__Time t) {
- 
-return  0 ;
- 
- }
- string time__Time_relative(time__Time t) {
- 
-time__Time now= time__now ( ) ;
- 
-int secs= now .uni - t .uni ;
- 
- if ( secs <= 30 ) {
- 
-return  tos2((byte*)"now") ;
- 
- }
- ;
- 
- if ( secs < 60 ) {
- 
-return  tos2((byte*)"1m") ;
- 
- }
- ;
- 
- if ( secs < 3600 ) {
- 
-return  _STR("%dm", secs / 60) ;
- 
- }
- ;
- 
- if ( secs < 3600 * 24 ) {
- 
-return  _STR("%dh", secs / 3600) ;
- 
- }
- ;
- 
- if ( secs < 3600 * 24 * 5 ) {
- 
-return  _STR("%dd", secs / 3600 / 24) ;
- 
- }
- ;
- 
- if ( secs > 3600 * 24 * 10000 ) {
- 
-return  tos2((byte*)"") ;
- 
- }
- ;
- 
-return  time__Time_md( t ) ;
- 
- }
- int time__day_of_week(int y, int m, int d) {
- 
-array_int t=new_array_from_c_array(12, 12, sizeof(int), (int[]) {  0 ,  3 ,  2 ,  5 ,  0 ,  3 ,  5 ,  1 ,  4 ,  6 ,  2 ,  4  }) ;
- 
-int sy= y ;
- 
- if ( ( m < 3 ) ) {
- 
- sy  =  sy - 1 ;
- 
- }
- ;
- 
-return  ( sy + sy / 4 - sy / 100 + sy / 400 + ( *(int*) array__get( t , m - 1) ) + d - 1 ) % 7 + 1 ;
- 
- }
- int time__Time_day_of_week(time__Time t) {
- 
-return  time__day_of_week ( t .year , t .month , t .day ) ;
- 
- }
- string time__Time_weekday_str(time__Time t) {
- 
-int i= time__Time_day_of_week( t ) - 1 ;
- 
-return  string_substr( time__Days , i * 3 , ( i + 1 ) * 3 ) ;
- 
- }
- i64 time__ticks() {
- 
- #ifdef _WIN32
- 
-return  GetTickCount ( ) ;
- 
- #else
-  
- struct /*c struct init*/ 
-
-timeval ts ;
- 
- gettimeofday ( & /*v*/  ts ,  0 ) ;
- 
-return  ts .tv_sec * 1000 + ( ts .tv_usec / 1000 ) ;
- 
- #endif
- ;
- 
- }
- void time__sleep(int seconds) {
- 
- #ifdef _WIN32
- 
- _sleep ( seconds * 1000 ) ;
- 
- #else
- 
- sleep ( seconds ) ;
- 
- #endif
- ;
- 
- }
- void time__usleep(int n) {
- 
- #ifdef _WIN32
- 
- #else
- 
- usleep ( n ) ;
- 
- #endif
- ;
- 
- }
- void time__sleep_ms(int n) {
- 
- #ifdef _WIN32
- 
- Sleep ( n ) ;
- 
- #else
- 
- usleep ( n * 1000 ) ;
- 
- #endif
- ;
- 
- }
- bool time__is_leap_year(int year) {
- 
-return  ( year % 4 == 0 )  &&  ( year % 100 != 0  ||  year % 400 == 0 ) ;
- 
- }
- Option_int time__days_in_month(int month, int year) {
- 
- if ( month > 12  ||  month < 1 ) {
- 
-return  v_error ( _STR("Invalid month: %d", month) ) ;
- 
- }
- ;
- 
-int extra= ( month == 2  &&  time__is_leap_year ( year ) ) ? ( 1 ) : ( 0 ) ;
- 
-int res= ( *(int*) array__get( time__MonthDays , month - 1) ) + extra ;
- 
-int tmp60 = OPTION_CAST(int)( res); return opt_ok(&tmp60, sizeof(int)) ;
- 
- }
- pg__DB pg__connect(pg__Config config) {
- 
-string conninfo= _STR("host=%.*s user=%.*s dbname=%.*s", config .host.len, config .host.str, config .user.len, config .user.str, config .dbname.len, config .dbname.str) ;
- 
-PGconn* conn= PQconnectdb ((char*) conninfo .str ) ;
- 
-int status= PQstatus ( conn ) ;
- 
- if ( status != CONNECTION_OK ) {
- 
-byte* error_msg= PQerrorMessage ( conn ) ;
- 
- eprintln (string_add( tos2((byte*)"Connection to a PG database failed: ") , (tos2((byte *) error_msg ) ) ) ) ;
- 
- v_exit ( 1 ) ;
- 
- }
- ;
- 
-return  (pg__DB) { .conn =  conn } ;
- 
- }
- array_pg__Row pg__res_to_rows(void* res) {
- 
-void* nr_rows= PQntuples ( res ) ;
- 
-void* nr_cols= PQnfields ( res ) ;
- 
-array_pg__Row rows=new_array_from_c_array(0, 0, sizeof(pg__Row), (pg__Row[]) {   0 }) ;
- 
- for (
-int i= 0  ;  i < nr_rows  ;  i ++ ) { 
- 
- 
-pg__Row row= (pg__Row) { .vals =  new_array(0, 1, sizeof( string )) } ;
- 
- for (
-int j= 0  ;  j < nr_cols  ;  j ++ ) { 
- 
- 
-byte* val= PQgetvalue ( res ,  i ,  j ) ;
- 
-_PUSH(& row .vals , ( (tos2((byte *) val ) ) ), tmp12, string) ;
- 
- }
- ;
- 
-_PUSH(& rows , ( row ), tmp13, pg__Row) ;
- 
- }
- ;
- 
-return  rows ;
- 
- }
- int pg__DB_q_int(pg__DB db, string query) {
- 
-array_pg__Row rows= pg__DB_exec( db , query ) ;
- 
- if ( rows .len == 0 ) {
- 
-printf( "q_int \"%.*s\" not found\n", query.len, query.str ) ;
- 
-return  0 ;
- 
- }
- ;
- 
-pg__Row row= ( *(pg__Row*) array__get( rows , 0) ) ;
- 
- if ( row .vals .len == 0 ) {
- 
-return  0 ;
- 
- }
- ;
- 
-string val= ( *(string*) array__get( row .vals , 0) ) ;
- 
-return  v_string_int( val ) ;
- 
- }
- string pg__DB_q_string(pg__DB db, string query) {
- 
-array_pg__Row rows= pg__DB_exec( db , query ) ;
- 
- if ( rows .len == 0 ) {
- 
-printf( "q_string \"%.*s\" not found\n", query.len, query.str ) ;
- 
-return  tos2((byte*)"") ;
- 
- }
- ;
- 
-pg__Row row= ( *(pg__Row*) array__get( rows , 0) ) ;
- 
- if ( row .vals .len == 0 ) {
- 
-return  tos2((byte*)"") ;
- 
- }
- ;
- 
-string val= ( *(string*) array__get( row .vals , 0) ) ;
- 
-return  val ;
- 
- }
- array_pg__Row pg__DB_q_strings(pg__DB db, string query) {
- 
-return  pg__DB_exec( db , query ) ;
- 
- }
- array_pg__Row pg__DB_exec(pg__DB db, string query) {
- 
-void* res= PQexec ( db .conn , (char*) query .str ) ;
- 
-string e= (tos2((byte *) PQerrorMessage ( db .conn ) ) ) ;
- 
- if (string_ne( e , tos2((byte*)"") ) ) {
- 
- println ( tos2((byte*)"pg exec error:") ) ;
- 
- println ( e ) ;
- 
-return  pg__res_to_rows ( res ) ;
- 
- }
- ;
- 
-return  pg__res_to_rows ( res ) ;
- 
- }
- Option_pg__Row pg__rows_first_or_empty(array_pg__Row rows) {
- 
- if ( rows .len == 0 ) {
- 
-return  v_error ( tos2((byte*)"no row") ) ;
- 
- }
- ;
- 
-pg__Row tmp32 = OPTION_CAST(pg__Row)( ( *(pg__Row*) array__get( rows , 0) )); return opt_ok(&tmp32, sizeof(pg__Row)) ;
- 
- }
- Option_pg__Row pg__DB_exec_one(pg__DB db, string query) {
- 
-void* res= PQexec ( db .conn , (char*) query .str ) ;
- 
-string e= (tos2((byte *) PQerrorMessage ( db .conn ) ) ) ;
- 
- if (string_ne( e , tos2((byte*)"") ) ) {
- 
-return  v_error ( _STR("pg exec error: \"%.*s\"", e.len, e.str) ) ;
- 
- }
- ;
- 
-Option_pg__Row row= pg__rows_first_or_empty ( pg__res_to_rows ( res ) ) ;
- 
-Option_pg__Row tmp36 = OPTION_CAST(Option_pg__Row)( row); return opt_ok(&tmp36, sizeof(pg__Row)) ;
- 
- }
- array_pg__Row pg__DB_exec_param2(pg__DB db, string query, string param, string param2) {
- 
-byte* param_vals  [2 ] ;
- 
- param_vals [ 0 ]/*rbyte* 1*/  =  param .str ;
- 
- param_vals [ 1 ]/*rbyte* 1*/  =  param2 .str ;
- 
-void* res= PQexecParams ( db .conn , (char*) query .str ,  2 ,  0 ,  param_vals ,  0 ,  0 ,  0 ) ;
- 
-string e= (tos2((byte *) PQerrorMessage ( db .conn ) ) ) ;
- 
- if (string_ne( e , tos2((byte*)"") ) ) {
- 
- println ( tos2((byte*)"pg exec2 error:") ) ;
- 
- println ( e ) ;
- 
-return  pg__res_to_rows ( res ) ;
- 
- }
- ;
- 
-return  pg__res_to_rows ( res ) ;
- 
- }
- array_pg__Row pg__DB_exec_param(pg__DB db, string query, string param) {
- 
-byte* param_vals  [1 ] ;
- 
- param_vals [ 0 ]/*rbyte* 1*/  =  param .str ;
- 
-void* res= PQexecParams ( db .conn , (char*) query .str ,  1 ,  0 ,  param_vals ,  0 ,  0 ,  0 ) ;
- 
-return  pg__res_to_rows ( res ) ;
- 
- }
  void vweb__Context_html(vweb__Context ctx, string html) {
  
  net__Socket_write( ctx .conn , _STR("HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n%.*s\r\n\r\n%.*s", ctx .headers.len, ctx .headers.str, html.len, html.str) ) ;
@@ -8291,318 +8242,3 @@ return  v_error ( tos2((byte*)"Cookie not found") ) ;
 return  string_find_between( ctx ->headers , _STR("\r\n%.*s: ", key.len, key.str) , tos2((byte*)"\r\n") ) ;
  
  }
- void vweb__run_App(int port) {
- // T start 2 println
- 
-printf( "Running vweb app on http://localhost:%d ...\n", port ) ;
- 
-Option_net__Socket tmp4 =  net__listen ( port ) ;
- if (!tmp4 .ok) {
- string err = tmp4 . error;
- 
- v_panic ( tos2((byte*)"failed to listen") ) ;
- 
- }
- net__Socket l = *(net__Socket*) tmp4 . data;
- ;
- 
-App app= (App) { EMPTY_STRUCT_INITIALIZATION } ;
- 
- App_init(& /* ? */ app ) ;
- 
- while (1) { 
- 
-Option_net__Socket tmp6 =  net__Socket_accept( l ) ;
- if (!tmp6 .ok) {
- string err = tmp6 . error;
- 
- v_panic ( tos2((byte*)"accept() failed") ) ;
- 
- }
- net__Socket conn = *(net__Socket*) tmp6 . data;
- ;
- 
-string s= net__Socket_read_line( conn ) ;
- 
- if (string_eq( s , tos2((byte*)"") ) ) {
- 
- net__Socket_write( conn , vweb__HTTP_500 ) ;
- 
- net__Socket_close( conn ) ;
- 
- return ;
- 
- }
- ;
- 
-string first_line= string_all_before( s , tos2((byte*)"\n") ) ;
- 
-array_string vals= string_split( first_line , tos2((byte*)" ") ) ;
- 
- if ( vals .len < 2 ) {
- 
- println ( tos2((byte*)"no vals for http") ) ;
- 
- net__Socket_write( conn , vweb__HTTP_500 ) ;
- 
- net__Socket_close( conn ) ;
- 
- return ;
- 
- }
- ;
- 
-string action= string_all_before( string_right( ( *(string*) array__get( vals , 1) ) , 1 ) , tos2((byte*)"/") ) ;
- 
- if ( string_contains( action , tos2((byte*)"?") ) ) {
- 
- action  =  string_all_before( action , tos2((byte*)"?") ) ;
- 
- }
- ;
- 
- if (string_eq( action , tos2((byte*)"") ) ) {
- 
- action  =  tos2((byte*)"index") ;
- 
- }
- ;
- 
-http__Request req= (http__Request) { .headers =  http__parse_headers ( string_split_into_lines( s ) ) , .ws_func =  0 , .user_ptr =  0 , .method =  ( *(string*) array__get( vals , 0) ) , .url =  ( *(string*) array__get( vals , 1) ) , .h =  tos((byte *)"", 0) , .cmd =  tos((byte *)"", 0) , .typ =  tos((byte *)"", 0) , .data =  tos((byte *)"", 0) , .verbose =  0 , .user_agent =  tos((byte *)"", 0) } ;
- 
- #ifdef VDEBUG
- 
-printf( "vweb action = \"%.*s\"\n", action.len, action.str ) ;
- 
- #endif
- ;
- 
- app .vweb  =  (vweb__Context) { .req =  req , .conn =  conn , .form =  new_map(1, sizeof(string)) , .static_files =  new_map(1, sizeof(string)) , .static_mime_types =  new_map(1, sizeof(string)) , .headers =  tos((byte *)"", 0) } ;
- 
- if (_IN(string, ( req .method ),  vweb__methods_with_form ) ) {
- 
- vweb__Context_parse_form(& /* ? */ app .vweb , s ) ;
- 
- }
- ;
- 
- if ( vals .len < 2 ) {
- 
- #ifdef VDEBUG
- 
- println ( tos2((byte*)"no vals for http") ) ;
- 
- #endif
- ;
- 
- net__Socket_close( conn ) ;
- 
- continue
- ;
- 
- }
- ;
- 
- if ( string_eq(action, _STR("init")) ) App_init(& app); else {
- 
- net__Socket_write( conn , vweb__HTTP_404 ) ;
- 
- }
- ;
- 
- net__Socket_close( conn ) ;
- 
- }
- ;
- 
- }
- void vweb__Context_parse_form(vweb__Context* ctx, string s) {
- 
- if ( ! (_IN(string, ( ctx ->req .method ),  vweb__methods_with_form ) ) ) {
- 
- return ;
- 
- }
- ;
- 
-int pos= string_index( s , tos2((byte*)"\r\n\r\n") ) ;
- 
- if ( pos > - 1 ) {
- 
-string str_form= string_substr( s , pos , s .len ) ;
- 
- str_form  =  string_replace( str_form , tos2((byte*)"+") , tos2((byte*)" ") ) ;
- 
-array_string words= string_split( str_form , tos2((byte*)"&") ) ;
- 
- array_string tmp35 =  words;
- for (int tmp36 = 0; tmp36 < tmp35.len; tmp36++) {
- string word = ((string *) tmp35 . data)[tmp36];
- 
- 
- #ifdef VDEBUG
- 
-printf( "parse form keyval=\"%.*s\"\n", word.len, word.str ) ;
- 
- #endif
- ;
- 
-array_string keyval= string_split( string_trim_space( word ) , tos2((byte*)"=") ) ;
- 
- if ( keyval .len != 2 ) {
- 
- continue
- ;
- 
- }
- ;
- 
-string key= ( *(string*) array__get( keyval , 0) ) ;
- 
-Option_string tmp43 =  net_dot_urllib__query_unescape ( ( *(string*) array__get( keyval , 1) ) ) ;
- if (!tmp43 .ok) {
- string err = tmp43 . error;
- 
- continue
- ;
- 
- }
- string val = *(string*) tmp43 . data;
- ;
- 
- #ifdef VDEBUG
- 
-printf( "http form \"%.*s\" => \"%.*s\"\n", key.len, key.str, val.len, val.str ) ;
- 
- #endif
- ;
- 
-map__set(& ctx ->form , key , & (string []) {  val }) ;
- 
- }
- ;
- 
- }
- ;
- 
- }
- void vweb__Context_scan_static_directory(vweb__Context* ctx, string directory_path, string mount_path) {
- 
-array_string files= os__ls ( directory_path ) ;
- 
- if ( files .len > 0 ) {
- 
- array_string tmp45 =  files;
- for (int tmp46 = 0; tmp46 < tmp45.len; tmp46++) {
- string file = ((string *) tmp45 . data)[tmp46];
- 
- 
-string ext= tos2((byte*)"") ;
- 
-int i= file .len ;
- 
-bool flag= 1 ;
- 
- while ( i > 0 ) {
- 
- 
- i -- ;
- 
- if ( flag ) {
- 
- ext  = string_add( string_substr( file , i , i + 1 ) , ext ) ;
- 
- }
- ;
- 
- if (string_eq( string_substr( file , i , i + 1 ) , tos2((byte*)".") ) ) {
- 
- flag  =  0 ;
- 
- }
- ;
- 
- }
- ;
- 
- if ( flag ) {
- 
- vweb__Context_scan_static_directory( ctx ,string_add(string_add( directory_path , tos2((byte*)"/") ) , file ) ,string_add(string_add( mount_path , tos2((byte*)"/") ) , file ) ) ;
- 
- }
-  else { 
- 
-map__set(& ctx ->static_files ,string_add(string_add( mount_path , tos2((byte*)"/") ) , file ) , & (string []) { string_add(string_add( directory_path , tos2((byte*)"/") ) , file ) }) ;
-  
- string tmp50 = tos((byte *)"", 0); bool tmp51 = map_get( vweb__mime_types , ext, & tmp50); 
- 
- if (!tmp51) tmp50 = tos((byte *)"", 0); 
-
-map__set(& ctx ->static_mime_types ,string_add(string_add( mount_path , tos2((byte*)"/") ) , file ) , & (string []) {  tmp50 }) ;
- 
- }
- ;
- 
- }
- ;
- 
- }
- ;
- 
- }
- bool vweb__Context_handle_static(vweb__Context* ctx, string directory_path) {
- 
- vweb__Context_scan_static_directory( ctx , directory_path , tos2((byte*)"") ) ;
-  
- string tmp52 = tos((byte *)"", 0); bool tmp53 = map_get( ctx ->static_files , ctx ->req .url, & tmp52); 
- 
- if (!tmp53) tmp52 = tos((byte *)"", 0); 
-
-string static_file= tmp52 ;
-  
- string tmp55 = tos((byte *)"", 0); bool tmp56 = map_get( ctx ->static_mime_types , ctx ->req .url, & tmp55); 
- 
- if (!tmp56) tmp55 = tos((byte *)"", 0); 
-
-string mime_type= tmp55 ;
- 
- if (string_ne( static_file , tos2((byte*)"") ) ) {
- 
-Option_string tmp58 =  os__read_file ( static_file ) ;
- if (!tmp58 .ok) {
- string err = tmp58 . error;
- 
-return  0 ;
- 
- }
- string data = *(string*) tmp58 . data;
- ;
- 
- net__Socket_write( ctx ->conn , _STR("HTTP/1.1 200 OK\r\nContent-Type: %.*s\r\n\r\n%.*s", mime_type.len, mime_type.str, data.len, data.str) ) ;
- 
-return  1 ;
- 
- }
- ;
- 
-return  0 ;
- 
- }
- void vweb__Context_serve_static(vweb__Context* ctx, string url, string file_path, string mime_type) {
- 
-map__set(& ctx ->static_files , url , & (string []) {  file_path }) ;
- 
-map__set(& ctx ->static_mime_types , url , & (string []) {  mime_type }) ;
- 
- }
- int main(int argc, char** argv) {
- init_consts();
- os__args = os__init_os_args(argc, (byteptr*)argv);
- 
-printf( "Running vorum on http://0.0.0.0:%d\n", main__port ) ;
- 
- vweb__run_App ( main__port ) ;
- 
- }
- void App_init(App* app) {
- 

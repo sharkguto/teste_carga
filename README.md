@@ -37,3 +37,9 @@ logging_collector=on
 ```bash
 gunicorn bench_blacksheep:app --workers=8 -b "0.0.0.0:8080" --worker-class=uvicorn.workers.UvicornWorker --log-level error
 ```
+
+## wrk
+
+```bash
+taskset -c 1 wrk --latency -t1 -c100 -d30s http://127.0.0.1:8080/
+```
