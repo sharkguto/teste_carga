@@ -1,8 +1,8 @@
-import asyncdispatch, jester, os, strutils
+import asyncdispatch, jester, strutils
 import json
 import pg
 #import db_postgres # -> use libpq
-import lists
+# import lists, os
 # import threadpool
 #nim c -d:release --threads:off --opt:speed --stackTrace:off example.nim
 
@@ -56,9 +56,9 @@ proc exec_query(): seq[JsonNode] =
     result = j
 
 router myrouter:
-    get "/db2":
-        var j_data = await exec_query_async()
-        resp $(%*j_data), "application/json" 
+    # get "/db2":
+    #     var j_data = await exec_query_async()
+    #     resp $(%*j_data), "application/json" 
     get "/json":
         var j_data = exec_query()
         resp $(%*j_data), "application/json"
