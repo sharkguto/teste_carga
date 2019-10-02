@@ -1,13 +1,14 @@
 import asyncdispatch, jester, strutils
 import json
-import pg
+#import pg
+import db_postgres
 #import db_postgres # -> use libpq
 # import lists, os
 # import threadpool
 #nim c -d:release --threads:off --opt:speed --stackTrace:off example.nim
 
 
-let pool = newAsyncPool("localhost", "gustavo", "test", "postgres", 20)
+#let pool = newAsyncPool("localhost", "gustavo", "test", "postgres", 20)
     #let db = newAsyncPool("localhost", "gustavo", "test", "postgres", 10)
 
     #let db = open("localhost", "gustavo", "test", "postgres")
@@ -30,18 +31,18 @@ proc rowizer(rec: seq[string]): JsonNode =
     result = %*Row(salary: parseFloat(rec[0]), address: rec[1],
             age: parseInt(rec[2]), id: parseInt(rec[3]), name: rec[4])
 
-proc exec_query_async(): Future[seq[JsonNode]] {.async.} =
-    var
-        j : seq[JsonNode] 
-        #j {.threadvar.}: seq[JsonNode]
+# proc exec_query_async(): Future[seq[JsonNode]] {.async.} =
+#     var
+#         j : seq[JsonNode] 
+#         #j {.threadvar.}: seq[JsonNode]
 
-    let rows = await pool.rows(sql"SELECT salary,address,age,id,name FROM test.company",
-            @[])
-    for rec in rows:
-        let row_data = await rowizer_async(rec)
-        j.add(row_data)
+#     let rows = await pool.rows(sql"SELECT salary,address,age,id,name FROM test.company",
+#             @[])
+#     for rec in rows:
+#         let row_data = await rowizer_async(rec)
+#         j.add(row_data)
 
-    result = j
+#     result = j
 
 proc exec_query(): seq[JsonNode] =
     let db = open("localhost", "gustavo", "test", "postgres")
@@ -59,6 +60,9 @@ router myrouter:
     # get "/db2":
     #     var j_data = await exec_query_async()
     #     resp $(%*j_data), "application/json" 
+    get "/db2":
+        var j_data = exec_query()
+        resp $(%*j_data), "application/json"
     get "/json":
         var j_data = exec_query()
         resp $(%*j_data), "application/json"
