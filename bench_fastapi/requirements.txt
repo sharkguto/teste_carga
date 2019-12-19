@@ -1,0 +1,7 @@
+fastapi[all]
+asyncpg
+pyjwt
+gunicorn
+pyjwt
+python-dotenv[cli]
+databases[postgresql]
