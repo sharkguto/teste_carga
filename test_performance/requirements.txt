@@ -6,7 +6,7 @@ aiohttp-jinja2==1.1.0
 Hypercorn==0.5.4
 django
 djangorestframework==3.9.2
-Django==1.11.20
+Django==1.11.29
 aiohttp_jinja2
 aiohttp
 aiohttp-swagger==1.0.9
